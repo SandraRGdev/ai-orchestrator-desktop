@@ -21,16 +21,43 @@ Multi-platform desktop application for AI model orchestration, comparison, and m
 - SQLite (local database)
 - Rust (backend logic)
 
-**Status:** Phase 02 Provider System complete (v0.1.0-beta)
+**Status:** Phase 05 Multi-Agent Workflows complete (v0.3.0)
 
 **See:** [Implementation Plan](../plans/260304-2008-ai-orchestrator-desktop/plan.md)
 
-**Implemented Features:**
-- Provider system with ModelProvider trait
+**Implemented Features (Phase 01-05):**
+
+**Phase 01 - Foundation:**
+- Tauri 2 project setup with React 19 + Vite
+- SQLite database with sqlx async integration
+- Database migrations system
+- Error handling with thiserror
+
+**Phase 02 - Provider System:**
+- ModelProvider trait for AI provider abstraction
 - OpenAI and Anthropic provider implementations
 - OS keychain integration for secure API key storage
 - Provider management UI (React components)
-- Provider CRUD Tauri commands (create, read, update, delete, list)
+- Provider CRUD Tauri commands
+
+**Phase 03 - Single Chat:**
+- Single-model chat interface
+- Message history persistence
+- Streaming response support
+
+**Phase 04 - Comparison Mode:**
+- Parallel model execution
+- Side-by-side response comparison
+- Cost and latency tracking
+
+**Phase 05 - Multi-Agent Workflows:**
+- Multi-agent execution engine (sequential, parallel, evaluator patterns)
+- DAG-based workflow execution with topological sorting
+- 4 preset agents: Researcher, Writer, Analyst, Evaluator
+- Custom agent creation with JSON Schema validation
+- Workflow builder UI for constructing multi-agent flows
+- 11 Tauri commands for agent/workflow management
+- Execution tracking with token usage and latency metrics
 
 ## Project Structure
 

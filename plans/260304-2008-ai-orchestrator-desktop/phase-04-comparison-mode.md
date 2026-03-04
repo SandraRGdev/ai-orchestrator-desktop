@@ -3,7 +3,7 @@
 
 **Branch**: `feature/comparison-mode` -> `develop` -> `main` (v0.2.0)
 **Version**: v0.2.0
-**Status**: pending
+**Status**: complete
 **Priority**: P1
 **Effort**: 10h
 **Dependencies**: Phase 01, Phase 02, Phase 03
@@ -521,33 +521,33 @@ export function MetricsCard({ label, value, highlight }: MetricsCardProps) {
 
 ## Todo Checklist
 
-- [ ] Create comparison_sessions table
-- [ ] Create comparison_results table
-- [ ] Define ComparisonSession and ComparisonResult models
-- [ ] Implement ComparisonService with parallel execution
-- [ ] Implement ComparisonRepository
-- [ ] Implement ComparisonResultRepository
-- [ ] Create run_comparison command
-- [ ] Create list_comparison_sessions command
-- [ ] Create get_comparison_results command
-- [ ] Build ComparisonView component
-- [ ] Build ResultPanel component
-- [ ] Build ComparisonInput component
-- [ ] Build MetricsCard component
-- [ ] Add model selector for multi-select
-- [ ] Test parallel execution with 3+ providers
+- [x] Create comparison_sessions table
+- [x] Create comparison_results table
+- [x] Define ComparisonSession and ComparisonResult models
+- [x] Implement ComparisonService with parallel execution
+- [x] Implement ComparisonRepository
+- [x] Implement ComparisonResultRepository
+- [x] Create run_comparison command
+- [x] Create list_comparison_sessions command
+- [x] Create get_comparison_results command
+- [x] Build ComparisonView component
+- [x] Build ResultPanel component
+- [x] Build ComparisonInput component
+- [x] Build MetricsCard component
+- [x] Add model selector for multi-select
+- [x] Test parallel execution with 3+ providers
 
 ---
 
 ## Success Criteria
 
-- [ ] Can select 2+ models for comparison
-- [ ] Executes all providers in parallel
-- [ ] Shows results side-by-side
-- [ ] Displays latency, tokens, cost metrics
-- [ ] Comparison sessions persist
-- [ ] Can view historical comparisons
-- [ ] < 2s total time for 3 models
+- [x] Can select 2+ models for comparison
+- [x] Executes all providers in parallel
+- [x] Shows results side-by-side
+- [x] Displays latency, tokens, cost metrics
+- [x] Comparison sessions persist
+- [x] Can view historical comparisons
+- [x] < 2s total time for 3 models
 
 ---
 

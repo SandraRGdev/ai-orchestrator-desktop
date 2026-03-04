@@ -3,6 +3,7 @@ import { Sidebar } from './components/layout/sidebar';
 import { ProviderList } from './components/providers';
 import { ChatInterface } from './components/chat';
 import { ComparisonView } from './components/comparison';
+import { AgentWorkspace } from './components/agents/agent-workspace';
 import { tauriService } from './services/tauri-service';
 import { appVersionAtom, currentViewAtom, selectedModelAtom, selectedProviderForChatAtom } from './stores/atoms';
 import { useAtom } from 'jotai';
@@ -81,12 +82,17 @@ function App() {
           <div className="h-full">
             <ComparisonView />
           </div>
+        ) : currentView === 'agents' ? (
+          <div className="h-full">
+            <AgentWorkspace />
+          </div>
         ) : (
           <div className="p-8">
             <h1 className="text-3xl font-bold mb-4">AI Orchestrator</h1>
             <p className="text-gray-400">Version: {version}</p>
             <div className="mt-8 p-4 bg-gray-800 rounded">
-              <p>Phase 04: Comparison Mode - Compare models side by side</p>
+              <p>Phase 05: Multi-Agent Workflows - Build and execute agent workflows</p>
+              <p className="mt-2 text-sm text-gray-400">Create sequential, parallel, or evaluator workflows using preset and custom agents.</p>
             </div>
           </div>
         )}

@@ -62,9 +62,9 @@ feature/*                  <- feature branches
 |-------|--------|---------|--------|
 | 01. Foundation | `feature/foundation` | v0.1.0-alpha | complete |
 | 02. Provider System | `feature/provider-system` | v0.1.0-beta | complete |
-| 03. Single Chat | `feature/single-chat` | v0.1.0 | pending |
-| 04. Comparison Mode | `feature/comparison-mode` | v0.2.0 | pending |
-| 05. Multi-Agent | `feature/multi-agent` | v0.3.0 | pending |
+| 03. Single Chat | `feature/single-chat` | v0.1.0 | complete |
+| 04. Comparison Mode | `feature/comparison-mode` | v0.2.0 | complete |
+| 05. Multi-Agent | `feature/multi-agent` | v0.3.0 | complete |
 | 06. Polish & Wizard | `feature/polish-wizard` | v0.4.0 | pending |
 
 ## Quick Links

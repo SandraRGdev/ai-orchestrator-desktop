@@ -6,12 +6,18 @@ mod errors;
 mod models;
 mod services;
 mod providers;
+mod agents;
 
 use services::CryptoService;
 use services::ProviderService;
 use services::ComparisonService;
+use agents::executor::AgentExecutor;
 use database::DatabaseService;
-use database::repositories::{ConversationRepository, MessageRepository, ComparisonSessionRepository, ComparisonResultRepository};
+use database::repositories::{
+    ConversationRepository, MessageRepository, ComparisonSessionRepository,
+    ComparisonResultRepository, AgentRepository, WorkflowRepository,
+    WorkflowExecutionRepository,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -51,12 +57,25 @@ pub fn run() {
             let comparison_session_repo = ComparisonSessionRepository::new(pool.clone());
             let comparison_result_repo = ComparisonResultRepository::new(pool.clone());
             let comparison_service = ComparisonService::new();
+            let agent_repo = AgentRepository::new(pool.clone());
+            let workflow_repo = WorkflowRepository::new(pool.clone());
+            let workflow_execution_repo = WorkflowExecutionRepository::new(pool.clone());
+            let mut agent_executor = AgentExecutor::new();
+
+            // Register preset agents
+            for agent in crate::agents::preset_agents::get_preset_agents() {
+                agent_executor.register_agent(agent);
+            }
 
             app.manage(conversation_repo);
             app.manage(message_repo);
             app.manage(comparison_session_repo);
             app.manage(comparison_result_repo);
             app.manage(comparison_service);
+            app.manage(agent_repo);
+            app.manage(workflow_repo);
+            app.manage(workflow_execution_repo);
+            app.manage(agent_executor);
             app.manage(pool.clone());
 
             Ok(())
@@ -79,6 +98,17 @@ pub fn run() {
             commands::list_comparison_sessions,
             commands::get_comparison_results,
             commands::delete_comparison_session,
+            commands::list_preset_agents,
+            commands::list_all_agents,
+            commands::create_custom_agent,
+            commands::delete_agent,
+            commands::create_workflow,
+            commands::list_workflows,
+            commands::get_workflow,
+            commands::delete_workflow,
+            commands::execute_workflow,
+            commands::get_workflow_execution,
+            commands::list_workflow_executions,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

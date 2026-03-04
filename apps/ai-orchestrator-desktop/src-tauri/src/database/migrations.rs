@@ -4,6 +4,9 @@ pub const MIGRATIONS: &[(&str, &str)] = &[
     ("003_messages", include_str!("migrations/003_messages.sql")),
     ("004_comparison_sessions", include_str!("migrations/004_comparison_sessions.sql")),
     ("005_comparison_results", include_str!("migrations/005_comparison_results.sql")),
+    ("007_agents", include_str!("migrations/007_agents.sql")),
+    ("008_workflows", include_str!("migrations/008_workflows.sql")),
+    ("009_workflow_executions", include_str!("migrations/009_workflow_executions.sql")),
 ];
 
 pub async fn run_migrations(pool: &sqlx::SqlitePool) -> Result<(), DatabaseError> {
