@@ -1,0 +1,17 @@
+use tauri::State;
+use crate::services::CryptoService;
+
+#[tauri::command]
+pub async fn unlock_app(
+    password: String,
+    crypto: State<'_, tokio::sync::Mutex<CryptoService>>,
+) -> Result<(), String> {
+    let mut crypto = crypto.lock().await;
+    crypto.unlock(&password)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn get_app_version() -> Result<String, String> {
+    Ok(env!("CARGO_PKG_VERSION").to_string())
+}
