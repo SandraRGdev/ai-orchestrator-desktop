@@ -1,6 +1,10 @@
 use tauri::State;
 use crate::services::CryptoService;
 
+pub mod provider_commands;
+
+pub use provider_commands::*;
+
 #[tauri::command]
 pub async fn unlock_app(
     password: String,

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Sidebar } from './components/layout/sidebar';
+import { ProviderList } from './components/providers';
 import { tauriService } from './services/tauri-service';
-import { appVersionAtom } from './stores/atoms';
+import { appVersionAtom, currentViewAtom } from './stores/atoms';
 import { useAtom } from 'jotai';
 import './styles.css';
 
 function App() {
   const [version, setVersion] = useAtom(appVersionAtom);
+  const [currentView] = useAtom(currentViewAtom);
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState('');
 
@@ -51,12 +53,20 @@ function App() {
   return (
     <div className="h-screen flex bg-gray-900 text-white">
       <Sidebar />
-      <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-4">Welcome to AI Orchestrator</h1>
-        <p className="text-gray-400">Version: {version}</p>
-        <div className="mt-8 p-4 bg-gray-800 rounded">
-          <p>Foundation phase complete. Ready for Phase 02: Provider System</p>
-        </div>
+      <main className="flex-1 overflow-auto">
+        {currentView === 'providers' ? (
+          <div className="max-w-2xl mx-auto">
+            <ProviderList />
+          </div>
+        ) : (
+          <div className="p-8">
+            <h1 className="text-3xl font-bold mb-4">AI Orchestrator</h1>
+            <p className="text-gray-400">Version: {version}</p>
+            <div className="mt-8 p-4 bg-gray-800 rounded">
+              <p>Phase 02: Provider System - Add providers to get started</p>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

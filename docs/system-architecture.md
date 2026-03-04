@@ -1,12 +1,82 @@
 # System Architecture
 
-**Last Updated**: 2026-01-28
+**Last Updated**: 2026-03-04
 **Version**: 2.9.0-beta.2
 **Project**: ClaudeKit Engineer
 
 ## Overview
 
 ClaudeKit Engineer implements a multi-agent AI orchestration architecture where specialized agents collaborate through a file-based communication protocol. The system enables developers to leverage AI assistance throughout the entire software development lifecycle - from planning and implementation to testing, review, and deployment.
+
+## Applications Built with ClaudeKit
+
+### AI Orchestrator Desktop
+
+**Location**: `apps/ai-orchestrator-desktop/`
+**Status**: Phase 02 Complete (v0.1.0-beta)
+**Implementation Plan**: [View Plan](../plans/260304-2008-ai-orchestrator-desktop/plan.md)
+
+Multi-platform desktop application for AI model orchestration, comparison, and multi-agent execution.
+
+**Tech Stack**:
+- Tauri 2 (desktop framework)
+- React 19 (frontend)
+- Jotai (state management)
+- SQLite (local database)
+- Rust (backend logic)
+
+**Implemented Features (Phase 01-02)**:
+
+**Phase 01 - Foundation** (Complete):
+- Tauri 2 project setup with React 19 + Vite
+- SQLite database with sqlx async integration
+- Database migrations system
+- Error handling with thiserror
+- Basic project structure and configuration
+
+**Phase 02 - Provider System** (Complete):
+- **ModelProvider Trait**: Extensible async trait for AI providers
+  - `send_prompt()`: Execute prompts with messages
+  - `list_models()`: Retrieve available models
+  - `validate_api_key()`: Verify API credentials
+- **Provider Implementations**:
+  - OpenAI Provider (GPT models)
+  - Anthropic Provider (Claude models)
+- **Security**:
+  - OS keychain integration via `keyring` crate
+  - Secure API key storage per provider
+  - Cross-platform credential management
+- **Provider Service**:
+  - Provider registry with CRUD operations
+  - API key validation
+  - Model listing support
+- **Tauri Commands** (IPC):
+  - `add_provider`: Register new provider with API key
+  - `remove_provider`: Delete provider configuration
+  - `list_providers`: Get all configured providers
+  - `list_provider_models`: Fetch available models
+  - `validate_provider_api_key`: Test API credentials
+- **React UI Components**:
+  - `ProviderList`: Display and manage providers
+  - `ProviderForm`: Add/edit provider configuration
+  - Jotai atoms for state management
+
+**Architecture**:
+```
+Frontend (React 19)
+    ↓ Tauri IPC Commands
+Backend (Rust)
+    ↓ ModelProvider Trait
+Providers (OpenAI, Anthropic)
+    ↓ HTTP Requests
+AI APIs
+```
+
+**Planned Features (Phase 03-06)**:
+- Single chat interface
+- Comparison mode (parallel model execution)
+- Multi-agent workflows
+- Polish & setup wizard
 
 ## Architectural Pattern
 

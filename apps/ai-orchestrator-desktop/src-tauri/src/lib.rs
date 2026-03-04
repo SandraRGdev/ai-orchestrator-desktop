@@ -4,8 +4,10 @@ mod commands;
 mod database;
 mod errors;
 mod services;
+mod providers;
 
 use services::CryptoService;
+use services::ProviderService;
 use database::DatabaseService;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -16,6 +18,10 @@ pub fn run() {
             // Initialize crypto service
             let crypto_service = CryptoService::new();
             app.manage(tokio::sync::Mutex::new(crypto_service));
+
+            // Initialize provider service
+            let provider_service = ProviderService::new();
+            app.manage(tokio::sync::Mutex::new(provider_service));
 
             // Initialize database service
             let app_data_dir = app.path().app_data_dir()
@@ -37,6 +43,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::unlock_app,
             commands::get_app_version,
+            commands::add_provider,
+            commands::remove_provider,
+            commands::list_providers,
+            commands::list_provider_models,
+            commands::validate_provider_api_key,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
