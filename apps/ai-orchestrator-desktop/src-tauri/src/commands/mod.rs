@@ -2,8 +2,12 @@ use tauri::State;
 use crate::services::CryptoService;
 
 pub mod provider_commands;
+pub mod conversation_commands;
+pub mod chat_commands;
 
 pub use provider_commands::*;
+pub use conversation_commands::*;
+pub use chat_commands::*;
 
 #[tauri::command]
 pub async fn unlock_app(

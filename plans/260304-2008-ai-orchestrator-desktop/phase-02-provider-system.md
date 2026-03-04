@@ -545,32 +545,32 @@ export function ProviderForm({ onSubmit, onCancel }: ProviderFormProps) {
 
 ## Todo Checklist
 
-- [ ] Define ModelProvider trait with async methods
-- [ ] Implement OpenAIProvider
-- [ ] Implement AnthropicProvider
-- [ ] Create KeychainService wrapper
-- [ ] Implement ProviderService registry
-- [ ] Create provider_repository.rs for database
-- [ ] Implement add_provider command
-- [ ] Implement remove_provider command
-- [ ] Implement list_models command
-- [ ] Create ProviderForm component
-- [ ] Create ProviderList component
-- [ ] Create ApiKeyInput component with visibility toggle
-- [ ] Add provider CRUD atoms
-- [ ] Test API key validation
-- [ ] Test provider registration
+- [x] Define ModelProvider trait with async methods
+- [x] Implement OpenAIProvider
+- [x] Implement AnthropicProvider
+- [x] Create KeychainService wrapper
+- [x] Implement ProviderService registry
+- [ ] Create provider_repository.rs for database (deferred to Phase 03)
+- [x] Implement add_provider command
+- [x] Implement remove_provider command
+- [x] Implement list_models command
+- [x] Create ProviderForm component
+- [x] Create ProviderList component
+- [x] Create ApiKeyInput component with visibility toggle (integrated in ProviderForm)
+- [x] Add provider CRUD atoms
+- [x] Test API key validation
+- [x] Test provider registration
 
 ---
 
 ## Success Criteria
 
-- [ ] Can add OpenAI provider with API key
-- [ ] Can add Anthropic provider with API key
-- [ ] API keys stored in OS keychain
-- [ ] Can list available models per provider
-- [ ] Can delete provider
-- [ ] Provider persists across app restarts
+- [x] Can add OpenAI provider with API key
+- [x] Can add Anthropic provider with API key
+- [x] API keys stored in OS keychain
+- [x] Can list available models per provider
+- [x] Can delete provider
+- [ ] Provider persists across app restarts (requires Phase 03 database)
 
 ---
 

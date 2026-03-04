@@ -3,7 +3,7 @@
 
 **Branch**: `feature/single-chat` -> `develop` -> `main` (v0.1.0)
 **Version**: v0.1.0
-**Status**: pending
+**Status**: complete
 **Priority**: P1
 **Effort**: 8h
 **Dependencies**: Phase 01, Phase 02
@@ -563,32 +563,32 @@ export const sendMessageAtom = atomWithMutation(() => ({
 
 ## Todo Checklist
 
-- [ ] Create conversations table migration
-- [ ] Create messages table migration
-- [ ] Define Conversation and Message models
-- [ ] Implement ConversationRepository
-- [ ] Implement MessageRepository
-- [ ] Create send_message command
-- [ ] Create get_conversation_messages command
-- [ ] Create ChatInterface component
-- [ ] Create MessageBubble component
-- [ ] Create ChatInput component with Enter-to-send
-- [ ] Create MessageList component
-- [ ] Set up message atoms with Jotai
-- [ ] Add conversation loading
-- [ ] Test message persistence
-- [ ] Test provider integration
+- [x] Create conversations table migration
+- [x] Create messages table migration
+- [x] Define Conversation and Message models
+- [x] Implement ConversationRepository
+- [x] Implement MessageRepository
+- [x] Create send_message command
+- [x] Create get_conversation_messages command
+- [x] Create ChatInterface component
+- [x] Create MessageBubble component
+- [x] Create ChatInput component with Enter-to-send
+- [x] Create MessageList component
+- [x] Set up message atoms with Jotai
+- [x] Add conversation loading
+- [x] Test message persistence
+- [x] Test provider integration
 
 ---
 
 ## Success Criteria
 
-- [ ] Can create new conversation
-- [ ] Can send message and receive response
-- [ ] Messages persist across app restarts
-- [ ] Can view conversation history
-- [ ] Shows token count and latency
-- [ ] Enter sends, Shift+Enter for newline
+- [x] Can create new conversation
+- [x] Can send message and receive response
+- [x] Messages persist across app restarts
+- [x] Can view conversation history
+- [x] Shows token count and latency
+- [x] Enter sends, Shift+Enter for newline
 
 ---
 

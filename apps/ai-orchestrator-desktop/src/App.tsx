@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Sidebar } from './components/layout/sidebar';
 import { ProviderList } from './components/providers';
+import { ChatInterface } from './components/chat';
 import { tauriService } from './services/tauri-service';
-import { appVersionAtom, currentViewAtom } from './stores/atoms';
+import { appVersionAtom, currentViewAtom, selectedModelAtom, selectedProviderForChatAtom } from './stores/atoms';
 import { useAtom } from 'jotai';
 import './styles.css';
 
 function App() {
   const [version, setVersion] = useAtom(appVersionAtom);
   const [currentView] = useAtom(currentViewAtom);
+  const [selectedModel] = useAtom(selectedModelAtom);
+  const [selectedProviderForChat] = useAtom(selectedProviderForChatAtom);
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState('');
 
@@ -58,12 +61,27 @@ function App() {
           <div className="max-w-2xl mx-auto">
             <ProviderList />
           </div>
+        ) : currentView === 'chat' ? (
+          selectedModel && selectedProviderForChat ? (
+            <ChatInterface
+              modelId={selectedModel}
+              providerId={selectedProviderForChat}
+              defaultTitle="New Chat"
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-400">
+              <div className="text-center p-8 bg-gray-800 rounded-lg">
+                <p className="text-lg mb-2">No model selected</p>
+                <p className="text-sm">Please select a provider and model from the providers page first</p>
+              </div>
+            </div>
+          )
         ) : (
           <div className="p-8">
             <h1 className="text-3xl font-bold mb-4">AI Orchestrator</h1>
             <p className="text-gray-400">Version: {version}</p>
             <div className="mt-8 p-4 bg-gray-800 rounded">
-              <p>Phase 02: Provider System - Add providers to get started</p>
+              <p>Phase 03: Single Chat - Chat interface coming soon</p>
             </div>
           </div>
         )}

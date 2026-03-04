@@ -1,5 +1,7 @@
 pub const MIGRATIONS: &[(&str, &str)] = &[
     ("001_initial_schema", include_str!("migrations/001_initial_schema.sql")),
+    ("002_conversations", include_str!("migrations/002_conversations.sql")),
+    ("003_messages", include_str!("migrations/003_messages.sql")),
 ];
 
 pub async fn run_migrations(pool: &sqlx::SqlitePool) -> Result<(), DatabaseError> {
