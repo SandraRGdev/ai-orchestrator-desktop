@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from './components/layout/sidebar';
 import { ProviderList } from './components/providers';
 import { ChatInterface } from './components/chat';
+import { ComparisonView } from './components/comparison';
 import { tauriService } from './services/tauri-service';
 import { appVersionAtom, currentViewAtom, selectedModelAtom, selectedProviderForChatAtom } from './stores/atoms';
 import { useAtom } from 'jotai';
@@ -76,12 +77,16 @@ function App() {
               </div>
             </div>
           )
+        ) : currentView === 'compare' ? (
+          <div className="h-full">
+            <ComparisonView />
+          </div>
         ) : (
           <div className="p-8">
             <h1 className="text-3xl font-bold mb-4">AI Orchestrator</h1>
             <p className="text-gray-400">Version: {version}</p>
             <div className="mt-8 p-4 bg-gray-800 rounded">
-              <p>Phase 03: Single Chat - Chat interface coming soon</p>
+              <p>Phase 04: Comparison Mode - Compare models side by side</p>
             </div>
           </div>
         )}

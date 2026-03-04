@@ -59,3 +59,35 @@ export interface SendMessageRequest {
   content: string;
 }
 
+export interface ComparisonSession {
+  id: string;
+  prompt: string;
+  created_at: string;
+}
+
+export interface ComparisonRequest {
+  prompt: string;
+  model_configs: ModelConfig[];
+}
+
+export interface ModelConfig {
+  provider_id: string;
+  model_id: string;
+}
+
+export interface ComparisonResult {
+  id: string;
+  session_id: string;
+  provider_id: string;
+  provider_name: string;
+  model_id: string;
+  model_name: string;
+  response: string;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  latency_ms: number;
+  cost_usd: number;
+  created_at: string;
+}
+

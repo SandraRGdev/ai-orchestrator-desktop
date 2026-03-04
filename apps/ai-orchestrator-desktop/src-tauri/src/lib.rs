@@ -9,8 +9,9 @@ mod providers;
 
 use services::CryptoService;
 use services::ProviderService;
+use services::ComparisonService;
 use database::DatabaseService;
-use database::{ConversationRepository, MessageRepository};
+use database::repositories::{ConversationRepository, MessageRepository, ComparisonSessionRepository, ComparisonResultRepository};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -47,8 +48,15 @@ pub fn run() {
             let pool = db_service.pool();
             let conversation_repo = ConversationRepository::new(pool.clone());
             let message_repo = MessageRepository::new(pool.clone());
+            let comparison_session_repo = ComparisonSessionRepository::new(pool.clone());
+            let comparison_result_repo = ComparisonResultRepository::new(pool.clone());
+            let comparison_service = ComparisonService::new();
+
             app.manage(conversation_repo);
             app.manage(message_repo);
+            app.manage(comparison_session_repo);
+            app.manage(comparison_result_repo);
+            app.manage(comparison_service);
             app.manage(pool.clone());
 
             Ok(())
@@ -67,6 +75,10 @@ pub fn run() {
             commands::delete_conversation,
             commands::send_message,
             commands::get_conversation_messages,
+            commands::run_comparison,
+            commands::list_comparison_sessions,
+            commands::get_comparison_results,
+            commands::delete_comparison_session,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
