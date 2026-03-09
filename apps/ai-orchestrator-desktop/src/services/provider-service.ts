@@ -3,7 +3,7 @@ import type { ProviderConfig, ModelInfo } from '@/stores/provider-atom';
 
 export async function addProvider(
   name: string,
-  providerType: 'openai' | 'anthropic' | 'google' | 'groq',
+  providerType: 'openai' | 'anthropic' | 'google' | 'groq' | 'openrouter',
   apiKey: string,
   baseUrl?: string
 ): Promise<void> {
@@ -20,7 +20,7 @@ export async function addProvider(
 export async function updateProvider(
   id: string,
   name: string,
-  providerType: 'openai' | 'anthropic' | 'google' | 'groq',
+  providerType: 'openai' | 'anthropic' | 'google' | 'groq' | 'openrouter',
   apiKey: string,
   baseUrl?: string
 ): Promise<void> {
@@ -60,7 +60,7 @@ export async function listProviderModels(providerId: string): Promise<ModelInfo[
 }
 
 export async function validateApiKey(
-  providerType: 'openai' | 'anthropic' | 'google' | 'groq',
+  providerType: 'openai' | 'anthropic' | 'google' | 'groq' | 'openrouter',
   apiKey: string
 ): Promise<boolean> {
   return await invoke('validate_provider_api_key', { providerType, apiKey });

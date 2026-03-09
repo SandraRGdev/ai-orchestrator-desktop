@@ -128,13 +128,6 @@ impl ModelProvider for OpenRouterProvider {
                 output_cost_per_1k: Some(0.0006),
             },
             ModelInfo {
-                id: "google/gemini-2.0-flash-exp".to_string(),
-                name: "Gemini 2.0 Flash (Exp)".to_string(),
-                context_length: Some(1000000),
-                input_cost_per_1k: Some(0.000075),
-                output_cost_per_1k: Some(0.0003),
-            },
-            ModelInfo {
                 id: "google/gemini-pro-1.5".to_string(),
                 name: "Gemini Pro 1.5".to_string(),
                 context_length: Some(1000000),

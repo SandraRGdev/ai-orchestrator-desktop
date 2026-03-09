@@ -84,6 +84,10 @@ export const createConversationAtom = atom(
       console.log('createConversationAtom: Conversation created successfully', conversation);
       set(currentConversationAtom, conversation);
       set(messagesAtom, []);
+
+      // Dispatch event to refresh conversation list in sidebar
+      window.dispatchEvent(new CustomEvent('refresh-conversations'));
+
       return conversation;
     } catch (error) {
       console.error('createConversationAtom: Failed to create conversation', error);
