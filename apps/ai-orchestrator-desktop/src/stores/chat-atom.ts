@@ -72,14 +72,22 @@ export const loadConversationsAtom = atom(
 export const createConversationAtom = atom(
   null,
   async (_get, set, { title, modelId, providerId }: { title: string; modelId: string; providerId: string }) => {
-    const { conversationService } = await import('../services/conversation-service');
-    const conversation = await conversationService.createConversation({
-      title,
-      model_id: modelId,
-      provider_id: providerId,
-    });
-    set(currentConversationAtom, conversation);
-    set(messagesAtom, []);
-    return conversation;
+    console.log('createConversationAtom: Creating conversation', { title, modelId, providerId });
+    try {
+      const { conversationService } = await import('../services/conversation-service');
+      console.log('createConversationAtom: Calling conversationService.createConversation');
+      const conversation = await conversationService.createConversation({
+        title,
+        model_id: modelId,
+        provider_id: providerId,
+      });
+      console.log('createConversationAtom: Conversation created successfully', conversation);
+      set(currentConversationAtom, conversation);
+      set(messagesAtom, []);
+      return conversation;
+    } catch (error) {
+      console.error('createConversationAtom: Failed to create conversation', error);
+      throw error;
+    }
   }
 );

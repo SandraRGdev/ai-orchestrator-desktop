@@ -10,8 +10,11 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isSystem) {
     return (
-      <div className="flex justify-center my-2">
-        <div className="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full">
+      <div className="flex justify-center my-4">
+        <div className="inline-flex items-center gap-2 bg-tertiary text-text-secondary text-xs px-4 py-2 rounded-full border border-border-subtle">
+          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
           {message.content}
         </div>
       </div>
@@ -21,17 +24,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
-        className={`max-w-[80%] rounded-lg px-4 py-2 ${
+        className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ${
           isUser
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-700 text-gray-100'
+            ? 'bg-gradient-to-br from-accent-primary to-accent-primary-hover text-white rounded-br-sm'
+            : 'bg-elevated border border-border-subtle text-text-primary rounded-bl-sm'
         }`}
       >
-        <div className="whitespace-pre-wrap break-words">{message.content}</div>
+        <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.content}</div>
         {message.tokens && (
-          <div className="text-xs opacity-70 mt-1">
-            {message.tokens} tokens
-            {message.latency_ms && ` • ${message.latency_ms}ms`}
+          <div className={`text-xs mt-2 flex items-center gap-2 ${isUser ? 'opacity-70' : 'text-text-tertiary'}`}>
+            <span>{message.tokens} tokens</span>
+            {message.latency_ms && (
+              <>
+                <span className="text-border-default">•</span>
+                <span>{message.latency_ms}ms</span>
+              </>
+            )}
           </div>
         )}
       </div>

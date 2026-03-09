@@ -34,8 +34,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-gray-700 p-4 bg-gray-800">
-      <div className="flex items-end gap-3">
+    <div className="border-t border-border-subtle p-4 bg-elevated">
+      <div className="flex items-end gap-3 max-w-4xl mx-auto">
         <textarea
           ref={textareaRef}
           value={input}
@@ -43,7 +43,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           onKeyDown={handleKeyDown}
           disabled={disabled || sending}
           placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-          className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="flex-1 bg-surface border border-border-subtle text-text-primary rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-accent-primary/50 focus:border-accent-primary disabled:opacity-50 placeholder:text-text-secondary transition-all"
           rows={1}
           style={{ minHeight: '48px', maxHeight: '200px' }}
         />
@@ -58,9 +58,21 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             }
           }}
           disabled={!input.trim() || disabled || sending}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 bg-accent-primary hover:bg-accent-primary-hover disabled:bg-tertiary disabled:cursor-not-allowed disabled:text-text-tertiary text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-primary/50 shadow-lg shadow-accent-primary/25 disabled:shadow-none whitespace-nowrap"
         >
-          {sending ? 'Sending...' : 'Send'}
+          {sending ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Sending
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+              Send
+            </>
+          )}
         </button>
       </div>
     </div>

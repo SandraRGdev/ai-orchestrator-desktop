@@ -20,7 +20,7 @@ export function MessageList({ messages: propMessages }: MessageListProps) {
 
   if (loading && messages.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-400">
+      <div className="flex-1 flex items-center justify-center text-text-tertiary">
         <div className="animate-pulse">Loading messages...</div>
       </div>
     );
@@ -28,7 +28,7 @@ export function MessageList({ messages: propMessages }: MessageListProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-400">
+      <div className="flex-1 flex items-center justify-center text-text-tertiary">
         <div className="text-center">
           <p className="text-lg mb-2">No messages yet</p>
           <p className="text-sm">Start a conversation by typing a message below</p>

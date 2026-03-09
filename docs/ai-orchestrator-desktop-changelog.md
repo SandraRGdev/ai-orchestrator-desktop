@@ -1,10 +1,66 @@
 # AI Orchestrator Desktop - Changelog
 
-**Last Updated**: 2026-03-04
-**Current Version**: v0.3.0
+**Last Updated**: 2026-03-09
+**Current Version**: v0.3.1
 **Application Location**: `apps/ai-orchestrator-desktop/`
 
 All notable changes to the AI Orchestrator Desktop application will be documented in this file.
+
+## [v0.3.1] - 2026-03-09
+
+### Added - Demo Mode (Quality of Life)
+
+#### Demo Mode Feature
+- **Full Demo Mode**: Run app without API keys for testing and demonstrations
+- **Auto-Unlock**: Bypasses password requirement in demo mode
+- **Demo Providers**: 3 pre-configured providers with 10 total models
+  - OpenAI (Demo): GPT-4o, GPT-4o Mini, GPT-4 Turbo, GPT-3.5 Turbo
+  - Anthropic (Demo): Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus
+  - Local LLM (Demo): Llama 3.2, Llama 3.1, Mistral 7B
+- **Demo Agents**: 4 preset agents for workflow testing
+  - Researcher, Writer, Analyst, Evaluator
+- **Mock Responses**: Realistic simulated responses per provider/agent
+- **Simulated Delays**: API-like delays (500-1500ms) for realistic UX
+- **Mock Metrics**: Token usage and cost tracking in demo mode
+
+#### Bug Fixes
+- **Database Crash Fix**: Background initialization prevents UI thread blocking
+  - Moved `DatabaseService::new()` to `tauri::async_runtime::spawn()`
+  - App no longer crashes on startup
+  - Clean console output: "Database initialized successfully"
+
+#### Frontend Changes
+- **App.tsx**: Demo mode flag, auto-unlock logic, visual indicators
+- **provider-atom.ts**: Demo provider definitions with model metadata
+- **agent-atom.ts**: Demo agent initialization
+- **conversation-service.ts**: Demo chat responses with provider-specific styles
+- **comparison-service.ts**: Demo comparison with model-specific responses
+- **agent-service.ts**: Demo workflow execution with node results
+
+#### Testing Results
+- **Tester Grade**: A+ (95/100) - All features passing
+- **Code Review Grade**: B+ - Functional with improvement recommendations
+- **App Launch**: ✅ No crashes
+- **All Modes**: ✅ Chat, Compare, Agents working in demo mode
+
+#### Known Issues
+- Demo mode hardcoded (requires code change to toggle)
+- Demo conversations not persisted
+- Duplicate `DEMO_MODE` constants across files
+- No environment variable support
+
+### Technical Details
+- **Files Modified**: 7 (App.tsx, 3 stores, 3 services, lib.rs)
+- **Lines Changed**: ~400 lines added/modified
+- **Compilation**: ✅ TypeScript + Rust successful (39 non-blocking warnings)
+- **Testing**: Manual testing with all features functional
+
+### Documentation
+- [Demo Mode Plan](../plans/260309-1824-demo-mode-implementation/plan.md)
+- [Testing Report](../plans/reports/tester-260309-1818-demo-mode-testing.md)
+- [Code Review Report](../plans/reports/code-reviewer-260309-1818-demo-mode-review.md)
+
+---
 
 ## [v0.3.0] - 2026-03-04
 
@@ -227,6 +283,7 @@ All notable changes to the AI Orchestrator Desktop application will be documente
 | v0.1.0 | Phase 01-03 | ✅ Released | 2026-03-04 |
 | v0.2.0 | Phase 04 | ✅ Released | 2026-03-04 |
 | v0.3.0 | Phase 05 | ✅ Released | 2026-03-04 |
+| v0.3.1 | Demo Mode | ✅ Released | 2026-03-09 |
 | v0.4.0 | Phase 06 | 📋 Planned | TBD |
 | v1.0.0 | Production Ready | 📋 Planned | TBD |
 
@@ -242,5 +299,5 @@ All notable changes to the AI Orchestrator Desktop application will be documente
 ---
 
 **Maintained By**: ClaudeKit Engineer Team
-**Last Review**: 2026-03-04
+**Last Review**: 2026-03-09
 **Next Review Target**: After Phase 06 completion

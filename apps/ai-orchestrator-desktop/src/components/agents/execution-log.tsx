@@ -55,13 +55,13 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
           <div className="space-y-4">
             <div className="p-3 bg-blue-50 rounded-md">
               <div className="font-medium">{selectedWorkflow.name}</div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-text-secondary">
                 {selectedWorkflow.flow_type} • {selectedWorkflow.nodes.length} agents
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Input Prompt
               </label>
               <textarea
@@ -76,7 +76,7 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
             <button
               onClick={handleExecute}
               disabled={!inputPrompt.trim() || isRunning}
-              className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-accent-success text-white rounded-xl hover:bg-accent-success disabled:bg-tertiary disabled:text-text-muted disabled:cursor-not-allowed"
             >
               {isRunning ? 'Running...' : 'Execute Workflow'}
             </button>
@@ -88,7 +88,7 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
             )}
           </div>
         ) : (
-          <p className="text-gray-500">Select or create a workflow first.</p>
+          <p className="text-text-secondary">Select or create a workflow first.</p>
         )}
       </div>
 
@@ -102,27 +102,27 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
                 <span
                   className={`px-2 py-1 rounded text-sm ${
                     propExecution.status === 'Completed'
-                      ? 'bg-green-100 text-green-800'
+                      ? 'bg-accent-success/20 text-accent-success'
                       : propExecution.status === 'Failed'
-                        ? 'bg-red-100 text-red-800'
+                        ? 'bg-accent-error/20 text-accent-error'
                         : propExecution.status === 'Running'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-accent-secondary/20 text-accent-secondary'
+                          : 'bg-tertiary text-text-primary'
                   }`}
                 >
                   {propExecution.status}
                 </span>
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-text-secondary">
                 Started: {formatDate(propExecution.started_at)}
               </div>
               {propExecution.completed_at && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-text-secondary">
                   Completed: {formatDate(propExecution.completed_at)}
                 </div>
               )}
               {propExecution.error_message && (
-                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                <div className="mt-2 p-2 bg-accent-error/10 border border-accent-error/30 rounded text-accent-error text-sm">
                   {propExecution.error_message}
                 </div>
               )}
@@ -136,11 +136,11 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
                     <div key={index} className="p-3 border rounded-md">
                       <div className="flex justify-between items-start mb-2">
                         <span className="font-medium">Node {index + 1}</span>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-text-secondary">
                           {node.tokens_used} tokens • {node.latency_ms}ms
                         </div>
                       </div>
-                      <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                      <div className="text-sm text-text-primary whitespace-pre-wrap">
                         {node.output}
                       </div>
                     </div>
@@ -174,17 +174,17 @@ export function ExecutionLog({ execution: propExecution }: ExecutionLogProps) {
                   <span
                     className={`px-2 py-1 rounded text-xs ${
                       exec.status === 'Completed'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-accent-success/20 text-accent-success'
                         : exec.status === 'Failed'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-accent-error/20 text-accent-error'
+                          : 'bg-tertiary text-text-primary'
                     }`}
                   >
                     {exec.status}
                   </span>
                 </div>
                 {exec.result && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-text-secondary">
                     {exec.result.node_results.length} nodes •{' '}
                     {exec.result.node_results.reduce((sum, n) => sum + n.tokens_used, 0)}{' '}
                     total tokens

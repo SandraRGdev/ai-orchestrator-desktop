@@ -65,6 +65,7 @@ feature/*                  <- feature branches
 | 03. Single Chat | `feature/single-chat` | v0.1.0 | complete |
 | 04. Comparison Mode | `feature/comparison-mode` | v0.2.0 | complete |
 | 05. Multi-Agent | `feature/multi-agent` | v0.3.0 | complete |
+| 05.5 Demo Mode | `main` | v0.3.1 | complete |
 | 06. Polish & Wizard | `feature/polish-wizard` | v0.4.0 | pending |
 
 ## Quick Links
@@ -74,6 +75,7 @@ feature/*                  <- feature branches
 - [Phase 03: Single Chat](./phase-03-single-chat.md)
 - [Phase 04: Comparison Mode](./phase-04-comparison-mode.md)
 - [Phase 05: Multi-Agent Workflows](./phase-05-multi-agent.md)
+- [Phase 05.5: Demo Mode](../260309-1824-demo-mode-implementation/plan.md) ✅ NEW
 - [Phase 06: Polish & Wizard](./phase-06-polish-wizard.md)
 
 ## Architecture Decisions

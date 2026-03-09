@@ -31,14 +31,23 @@ export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }
   useEffect(() => {
     if (!initialized) {
       const initConversation = async () => {
-        if (!currentConversation) {
-          await createConversation({
-            title: defaultTitle,
-            modelId,
-            providerId,
-          });
+        console.log('Chat: Initializing conversation', { modelId, providerId, defaultTitle });
+        try {
+          if (!currentConversation) {
+            console.log('Chat: Creating new conversation...');
+            const conversation = await createConversation({
+              title: defaultTitle,
+              modelId,
+              providerId,
+            });
+            console.log('Chat: Conversation created', conversation);
+          } else {
+            console.log('Chat: Using existing conversation', currentConversation);
+          }
+          setInitialized(true);
+        } catch (error) {
+          console.error('Chat: Failed to initialize conversation', error);
         }
-        setInitialized(true);
       };
       initConversation();
     }
@@ -73,18 +82,25 @@ export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }
 
   if (!initialized || !currentConversation) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-400">
-        <div className="animate-pulse">Setting up chat...</div>
+      <div className="flex-1 flex items-center justify-center text-text-secondary">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin"></div>
+          <p className="text-sm">Setting up chat...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-900">
-      <div className="border-b border-gray-700 px-4 py-3 bg-gray-800">
-        <h2 className="font-semibold text-white">{currentConversation.title}</h2>
-        <p className="text-xs text-gray-400">
-          {providerId} • {modelId}
+    <div className="flex flex-col h-full bg-primary">
+      <div className="border-b border-border-subtle px-6 py-4 bg-elevated">
+        <h2 className="font-semibold text-lg text-text-primary">{currentConversation.title}</h2>
+        <p className="text-xs text-text-secondary mt-1 flex items-center gap-2">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-tertiary text-xs font-medium">
+            {providerId}
+          </span>
+          <span className="text-text-tertiary">•</span>
+          <span className="font-mono text-xs">{modelId}</span>
         </p>
       </div>
 

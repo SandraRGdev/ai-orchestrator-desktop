@@ -107,7 +107,7 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
 
         {workflows.length > 0 && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Saved Workflows
             </label>
             <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
@@ -117,12 +117,12 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
                   onClick={() => handleSelectWorkflow(workflow)}
                   className={`w-full text-left px-3 py-2 rounded ${
                     selectedWorkflowId === workflow.id
-                      ? 'bg-blue-100 border-blue-500 border'
-                      : 'bg-gray-50 hover:bg-gray-100'
+                      ? 'bg-accent-primary/20 border-accent-primary border'
+                      : 'bg-tertiary hover:bg-border'
                   }`}
                 >
                   <div className="font-medium">{workflow.name}</div>
-                  <div className="text-sm text-gray-500">{workflow.flow_type}</div>
+                  <div className="text-sm text-text-secondary">{workflow.flow_type}</div>
                 </button>
               ))}
             </div>
@@ -131,7 +131,7 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Workflow Name
             </label>
             <input
@@ -139,12 +139,12 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
               placeholder="My Research Workflow"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border-subtle bg-surface text-text-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-primary/50 placeholder:text-text-secondary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Description (optional)
             </label>
             <textarea
@@ -152,37 +152,37 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
               onChange={(e) => setWorkflowDescription(e.target.value)}
               placeholder="Describe what this workflow does..."
               rows={2}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border-subtle bg-surface text-text-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-primary/50 placeholder:text-text-secondary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Flow Type
             </label>
             <select
               value={flowType}
               onChange={(e) => setFlowType(e.target.value as FlowType)}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border-subtle bg-surface text-text-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-primary/50 [&>option]:bg-tertiary [&>option]:text-text-primary"
             >
               <option value="Sequential">Sequential</option>
               <option value="Parallel">Parallel</option>
               <option value="Evaluator">Evaluator</option>
             </select>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-text-secondary mt-1">
               {flowTypeLabels[flowType]}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Select Agents ({selectedAgents.length} selected)
             </label>
             <div className="space-y-2 max-h-60 overflow-y-auto border rounded p-3">
               {allAgents.map((agent) => (
                 <label
                   key={agent.id}
-                  className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                  className="flex items-start gap-3 p-2 hover:bg-tertiary rounded cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -193,9 +193,9 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
                   <div className="flex-1">
                     <div className="font-medium">{agent.name}</div>
                     {agent.description && (
-                      <div className="text-sm text-gray-500">{agent.description}</div>
+                      <div className="text-sm text-text-secondary">{agent.description}</div>
                     )}
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-text-tertiary">
                       {agent.is_preset ? 'Preset' : 'Custom'} • {agent.agent_type}
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export function WorkflowBuilder({ onSave }: WorkflowBuilderProps) {
           <button
             onClick={handleSave}
             disabled={!workflowName || selectedAgents.length === 0}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 bg-accent-primary text-white rounded-xl hover:bg-accent-primary-hover disabled:bg-tertiary disabled:text-text-muted disabled:cursor-not-allowed"
           >
             Save Workflow
           </button>

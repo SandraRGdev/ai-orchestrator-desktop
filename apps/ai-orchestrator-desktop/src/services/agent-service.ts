@@ -7,7 +7,7 @@ import type {
   WorkflowExecution,
 } from '../stores/agent-atom';
 
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 
 // Demo agent responses
 const DEMO_AGENT_RESPONSES: Record<string, string> = {

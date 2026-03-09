@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { ComparisonSession, ComparisonRequest, ComparisonResult } from '../types/generated';
 
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 
 // Demo comparison responses
 const DEMO_COMPARISON_RESPONSES: Record<string, { response: string; style: string }> = {

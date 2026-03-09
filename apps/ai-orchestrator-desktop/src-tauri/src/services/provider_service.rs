@@ -1,5 +1,8 @@
 use crate::providers::openai_provider::OpenAIProvider;
 use crate::providers::anthropic_provider::AnthropicProvider;
+use crate::providers::google_provider::GoogleProvider;
+use crate::providers::groq_provider::GroqProvider;
+use crate::providers::openrouter_provider::OpenRouterProvider;
 use crate::providers::trait_definition::ModelProvider;
 use crate::services::keychain_service::KeychainService;
 use std::collections::HashMap;
@@ -71,6 +74,67 @@ impl ProviderService {
         Ok(())
     }
 
+    pub async fn register_google(
+        &mut self,
+        id: String,
+        name: String,
+        api_key: String,
+    ) -> Result<(), ProviderError> {
+        let provider = GoogleProvider::new(api_key.clone());
+        self.providers.insert(id.clone(), Arc::new(provider));
+        self.keychain.store_api_key(&id, &api_key)
+            .map_err(|e| ProviderError::Keychain(e.to_string()))?;
+        self.configs.insert(id.clone(), ProviderConfig {
+            id: id.clone(),
+            name,
+            provider_type: "google".to_string(),
+            base_url: None,
+            enabled: true,
+        });
+        Ok(())
+    }
+
+    pub async fn register_groq(
+        &mut self,
+        id: String,
+        name: String,
+        api_key: String,
+    ) -> Result<(), ProviderError> {
+        let provider = GroqProvider::new(api_key.clone());
+        self.providers.insert(id.clone(), Arc::new(provider));
+        self.keychain.store_api_key(&id, &api_key)
+            .map_err(|e| ProviderError::Keychain(e.to_string()))?;
+        self.configs.insert(id.clone(), ProviderConfig {
+            id: id.clone(),
+            name,
+            provider_type: "groq".to_string(),
+            base_url: None,
+            enabled: true,
+        });
+        Ok(())
+    }
+
+    pub async fn register_openrouter(
+        &mut self,
+        id: String,
+        name: String,
+        api_key: String,
+        base_url: Option<String>,
+    ) -> Result<(), ProviderError> {
+        let provider = OpenRouterProvider::new(api_key.clone(), base_url.clone());
+        self.providers.insert(id.clone(), Arc::new(provider));
+        self.keychain.store_api_key(&id, &api_key)
+            .map_err(|e| ProviderError::Keychain(e.to_string()))?;
+        self.configs.insert(id.clone(), ProviderConfig {
+            id: id.clone(),
+            name,
+            provider_type: "openrouter".to_string(),
+            base_url,
+            enabled: true,
+        });
+        Ok(())
+    }
+
     pub fn get_provider(&self, id: &str) -> Option<Arc<dyn ModelProvider>> {
         self.providers.get(id).cloned()
     }
@@ -78,8 +142,14 @@ impl ProviderService {
     pub fn remove_provider(&mut self, id: &str) -> Result<(), ProviderError> {
         self.providers.remove(id);
         self.configs.remove(id);
-        self.keychain.delete_api_key(id)
-            .map_err(|e| ProviderError::Keychain(e.to_string()))?;
+        // Try to delete from keychain, but don't fail if entry doesn't exist
+        if let Err(e) = self.keychain.delete_api_key(id) {
+            println!("Warning: Failed to delete API key from keychain for {}: {}", id, e);
+            // Only fail if it's a real error, not "entry not found"
+            if !e.to_string().contains("No matching entry") && !e.to_string().contains("not found") {
+                return Err(ProviderError::Keychain(e.to_string()));
+            }
+        }
         Ok(())
     }
 
@@ -104,6 +174,18 @@ impl ProviderService {
                 }
                 "anthropic" => {
                     let provider = AnthropicProvider::new(api_key);
+                    self.providers.insert(config.id.clone(), Arc::new(provider));
+                }
+                "google" => {
+                    let provider = GoogleProvider::new(api_key);
+                    self.providers.insert(config.id.clone(), Arc::new(provider));
+                }
+                "groq" => {
+                    let provider = GroqProvider::new(api_key);
+                    self.providers.insert(config.id.clone(), Arc::new(provider));
+                }
+                "openrouter" => {
+                    let provider = OpenRouterProvider::new(api_key, config.base_url.clone());
                     self.providers.insert(config.id.clone(), Arc::new(provider));
                 }
                 _ => continue,

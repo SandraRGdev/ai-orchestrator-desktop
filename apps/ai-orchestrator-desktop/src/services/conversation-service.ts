@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { Conversation, CreateConversation, Message, SendMessageRequest } from '../types/generated';
 
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 
 // Mock responses for demo mode
 const DEMO_RESPONSES: Record<string, string[]> = {
@@ -30,7 +30,9 @@ function getDemoResponse(providerId: string): string {
 
 export class ConversationService {
   async createConversation(req: CreateConversation): Promise<Conversation> {
+    console.log('conversationService.createConversation called', req);
     if (DEMO_MODE) {
+      console.log('conversationService: Using DEMO_MODE');
       return {
         id: `demo-${Date.now()}`,
         title: req.title,
@@ -40,21 +42,24 @@ export class ConversationService {
         updated_at: new Date().toISOString(),
       };
     }
-    return invoke('create_conversation', { req });
+    console.log('conversationService: Calling Tauri invoke create_conversation');
+    const result = await invoke<Conversation>('create_conversation', { req });
+    console.log('conversationService: Tauri invoke completed', result);
+    return result;
   }
 
   async getConversation(id: string): Promise<Conversation> {
     if (DEMO_MODE) {
       throw new Error('Demo mode: conversations not persisted');
     }
-    return invoke('get_conversation', { id });
+    return invoke<Conversation>('get_conversation', { id });
   }
 
   async listConversations(): Promise<Conversation[]> {
     if (DEMO_MODE) {
       return [];
     }
-    return invoke('list_conversations');
+    return invoke<Conversation[]>('list_conversations');
   }
 
   async deleteConversation(id: string): Promise<void> {
@@ -79,14 +84,14 @@ export class ConversationService {
         created_at: new Date().toISOString(),
       };
     }
-    return invoke('send_message', { req });
+    return invoke<Message>('send_message', { req });
   }
 
   async getConversationMessages(conversationId: string): Promise<Message[]> {
     if (DEMO_MODE) {
       return [];
     }
-    return invoke('get_conversation_messages', { conversationId });
+    return invoke<Message[]>('get_conversation_messages', { conversationId });
   }
 }
 

@@ -7,13 +7,15 @@ pub const MIGRATIONS: &[(&str, &str)] = &[
     ("007_agents", include_str!("migrations/007_agents.sql")),
     ("008_workflows", include_str!("migrations/008_workflows.sql")),
     ("009_workflow_executions", include_str!("migrations/009_workflow_executions.sql")),
+    ("010_settings", include_str!("migrations/010_settings.sql")),
 ];
 
 pub async fn run_migrations(pool: &sqlx::SqlitePool) -> Result<(), DatabaseError> {
     // Create migrations table if not exists
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS schema_migrations (
-            version INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            version TEXT NOT NULL UNIQUE,
             name TEXT NOT NULL,
             applied_at TEXT NOT NULL DEFAULT (datetime('now'))
         )"
@@ -21,12 +23,12 @@ pub async fn run_migrations(pool: &sqlx::SqlitePool) -> Result<(), DatabaseError
     .execute(pool)
     .await?;
 
-    for (version, sql) in MIGRATIONS {
+    for (idx, (version, sql)) in MIGRATIONS.iter().enumerate() {
         let name = version.split('_').last().unwrap_or(version);
 
         // Check if migration already applied
-        let applied: Option<i64> = sqlx::query_scalar(
-            "SELECT version FROM schema_migrations WHERE name = ?"
+        let applied: Option<String> = sqlx::query_scalar(
+            "SELECT version FROM schema_migrations WHERE version = ?"
         )
         .bind(name)
         .fetch_optional(pool)
@@ -45,7 +47,7 @@ pub async fn run_migrations(pool: &sqlx::SqlitePool) -> Result<(), DatabaseError
             sqlx::query(
                 "INSERT INTO schema_migrations (version, name) VALUES (?, ?)"
             )
-            .bind(chrono::Utc::now().timestamp())
+            .bind(name)
             .bind(name)
             .execute(pool)
             .await?;

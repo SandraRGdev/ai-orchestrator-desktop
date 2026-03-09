@@ -6,9 +6,9 @@ interface MetricsCardProps {
 
 export function MetricsCard({ label, value, highlight }: MetricsCardProps) {
   return (
-    <div className={`bg-gray-800 rounded-lg px-3 py-2 ${highlight ? 'ring-2 ring-green-500' : ''}`}>
-      <div className="text-xs text-gray-400">{label}</div>
-      <div className="font-semibold text-white">{value}</div>
+    <div className={`bg-tertiary rounded-xl px-4 py-3 border border-border-subtle ${highlight ? 'ring-2 ring-accent-success' : ''}`}>
+      <div className="text-xs text-text-tertiary uppercase tracking-wide font-medium mb-1">{label}</div>
+      <div className="font-semibold text-text-primary">{value}</div>
     </div>
   );
 }
