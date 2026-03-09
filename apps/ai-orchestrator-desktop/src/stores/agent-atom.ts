@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { DEMO_PRESET_AGENTS } from '../services/agent-service';
 
 export interface AgentConfig {
   system_prompt: string;
@@ -81,8 +82,8 @@ export interface WorkflowExecution {
   completed_at: string | null;
 }
 
-// Atoms for state management
-export const presetAgentsAtom = atom<AgentDefinition[]>([]);
+// Atoms for state management - initialize with demo agents
+export const presetAgentsAtom = atom<AgentDefinition[]>(DEMO_PRESET_AGENTS);
 export const customAgentsAtom = atom<AgentDefinition[]>([]);
 export const workflowsAtom = atom<Workflow[]>([]);
 export const executionsAtom = atom<Record<string, WorkflowExecution[]>>({});

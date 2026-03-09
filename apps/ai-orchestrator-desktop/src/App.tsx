@@ -9,12 +9,15 @@ import { appVersionAtom, currentViewAtom, selectedModelAtom, selectedProviderFor
 import { useAtom } from 'jotai';
 import './styles.css';
 
+// Demo mode - skip password for development
+const DEMO_MODE = true;
+
 function App() {
   const [version, setVersion] = useAtom(appVersionAtom);
   const [currentView] = useAtom(currentViewAtom);
   const [selectedModel] = useAtom(selectedModelAtom);
   const [selectedProviderForChat] = useAtom(selectedProviderForChatAtom);
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(DEMO_MODE);
   const [password, setPassword] = useState('');
 
   useEffect(() => {
@@ -23,6 +26,10 @@ function App() {
 
   const handleUnlock = async () => {
     try {
+      if (DEMO_MODE) {
+        setUnlocked(true);
+        return;
+      }
       await tauriService.unlockApp(password);
       setUnlocked(true);
     } catch (e) {
@@ -30,12 +37,20 @@ function App() {
     }
   };
 
+  // Auto-unlock in demo mode
+  useEffect(() => {
+    if (DEMO_MODE && !unlocked) {
+      setUnlocked(true);
+    }
+  }, [unlocked]);
+
   if (!unlocked) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-900 text-white">
         <div className="bg-gray-800 p-8 rounded-lg shadow-xl">
           <h1 className="text-2xl font-bold mb-4">AI Orchestrator v{version}</h1>
           <p className="mb-4 text-gray-400">Enter your master password to unlock</p>
+          {DEMO_MODE && <p className="mb-4 text-xs text-yellow-400">DEMO MODE - Click unlock to continue</p>}
           <input
             type="password"
             value={password}
@@ -73,8 +88,9 @@ function App() {
           ) : (
             <div className="h-full flex items-center justify-center text-gray-400">
               <div className="text-center p-8 bg-gray-800 rounded-lg">
-                <p className="text-lg mb-2">No model selected</p>
-                <p className="text-sm">Please select a provider and model from the providers page first</p>
+                <p className="text-lg mb-2">⚠️ No model selected</p>
+                <p className="text-sm mb-4">Please select a provider and model from the providers page first</p>
+                {DEMO_MODE && <p className="text-xs text-yellow-400">💡 Demo providers are pre-configured - go to Providers page</p>}
               </div>
             </div>
           )
@@ -89,10 +105,16 @@ function App() {
         ) : (
           <div className="p-8">
             <h1 className="text-3xl font-bold mb-4">AI Orchestrator</h1>
-            <p className="text-gray-400">Version: {version}</p>
+            <p className="text-gray-400">Version: {version} {DEMO_MODE && '(Demo Mode)'}</p>
             <div className="mt-8 p-4 bg-gray-800 rounded">
-              <p>Phase 05: Multi-Agent Workflows - Build and execute agent workflows</p>
-              <p className="mt-2 text-sm text-gray-400">Create sequential, parallel, or evaluator workflows using preset and custom agents.</p>
+              <p className="text-lg font-semibold mb-2">🚀 Multi-Agent AI Orchestrator</p>
+              <p className="text-gray-300 mb-2">Build and execute AI workflows with multiple agents</p>
+              <ul className="text-sm text-gray-400 list-disc list-inside">
+                <li>💬 Chat with AI models (OpenAI, Anthropic, etc.)</li>
+                <li>⚖️ Compare responses from multiple models side-by-side</li>
+                <li>🤖 Build multi-agent workflows (Sequential, Parallel, Evaluator)</li>
+              </ul>
+              {DEMO_MODE && <p className="mt-4 text-xs text-yellow-400">💡 Demo mode: Mock responses enabled</p>}
             </div>
           </div>
         )}

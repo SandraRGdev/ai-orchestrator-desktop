@@ -32,34 +32,33 @@ pub fn run() {
             let provider_service = ProviderService::new();
             app.manage(tokio::sync::Mutex::new(provider_service));
 
-            // Initialize database
+            // Initialize database (lazy, don't block)
             let app_data_dir = app.path().app_data_dir()
                 .expect("Failed to get app data dir");
 
             std::fs::create_dir_all(&app_data_dir)
                 .expect("Failed to create app data dir");
 
-            let db_path = app_data_dir.join("ai-orchestrator.db");
-            let db_path_str = db_path.to_string_lossy().to_string();
+            // Spawn database initialization in background
+            tauri::async_runtime::spawn(async move {
+                let db_path = app_data_dir.join("ai-orchestrator.db");
+                let db_path_str = db_path.to_string_lossy().to_string();
 
-            // Block on database initialization for now
-            let db_service = std::thread::spawn(move || {
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(async {
-                    DatabaseService::new(&db_path_str).await.expect("Failed to initialize database")
-                })
-            }).join().unwrap();
+                match DatabaseService::new(&db_path_str).await {
+                    Ok(db_service) => {
+                        // TODO: Store db_service somewhere accessible
+                        println!("Database initialized successfully");
+                    }
+                    Err(e) => {
+                        eprintln!("Failed to initialize database: {:?}", e);
+                    }
+                }
+            });
 
-            // Initialize repositories
-            let pool = db_service.pool();
-            let conversation_repo = ConversationRepository::new(pool.clone());
-            let message_repo = MessageRepository::new(pool.clone());
-            let comparison_session_repo = ComparisonSessionRepository::new(pool.clone());
-            let comparison_result_repo = ComparisonResultRepository::new(pool.clone());
+            // Initialize comparison service (stateless for demo)
             let comparison_service = ComparisonService::new();
-            let agent_repo = AgentRepository::new(pool.clone());
-            let workflow_repo = WorkflowRepository::new(pool.clone());
-            let workflow_execution_repo = WorkflowExecutionRepository::new(pool.clone());
+
+            // Initialize agent executor with preset agents
             let mut agent_executor = AgentExecutor::new();
 
             // Register preset agents
@@ -67,16 +66,9 @@ pub fn run() {
                 agent_executor.register_agent(agent);
             }
 
-            app.manage(conversation_repo);
-            app.manage(message_repo);
-            app.manage(comparison_session_repo);
-            app.manage(comparison_result_repo);
+            // Manage services (for demo mode, repos are optional)
             app.manage(comparison_service);
-            app.manage(agent_repo);
-            app.manage(workflow_repo);
-            app.manage(workflow_execution_repo);
             app.manage(agent_executor);
-            app.manage(pool.clone());
 
             Ok(())
         })
