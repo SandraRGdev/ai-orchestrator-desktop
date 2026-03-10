@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
@@ -18,7 +18,7 @@ interface ChatInterfaceProps {
   defaultTitle?: string;
 }
 
-export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }: ChatInterfaceProps) {
+export function ChatInterface({ modelId, providerId, defaultTitle = 'Nuevo chat' }: ChatInterfaceProps) {
   const [currentConversation] = useAtom(currentConversationAtom);
   const [messages, setMessages] = useAtom(messagesAtom);
   const [loading] = useAtom(messagesLoadingAtom);
@@ -26,31 +26,45 @@ export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }
   const sendMessage = useSetAtom(sendMessageAtom);
   const createConversation = useSetAtom(createConversationAtom);
   const [initialized, setInitialized] = useState(false);
+  const initStartedRef = useRef(false);
+
+  useEffect(() => {
+    setInitialized(false);
+    initStartedRef.current = false;
+  }, [modelId, providerId]);
 
   // Initialize conversation
   useEffect(() => {
-    if (!initialized) {
-      const initConversation = async () => {
-        console.log('Chat: Initializing conversation', { modelId, providerId, defaultTitle });
-        try {
-          if (!currentConversation) {
-            console.log('Chat: Creating new conversation...');
-            const conversation = await createConversation({
-              title: defaultTitle,
-              modelId,
-              providerId,
-            });
-            console.log('Chat: Conversation created', conversation);
-          } else {
-            console.log('Chat: Using existing conversation', currentConversation);
-          }
-          setInitialized(true);
-        } catch (error) {
-          console.error('Chat: Failed to initialize conversation', error);
-        }
-      };
-      initConversation();
+    if (initialized || initStartedRef.current) {
+      return;
     }
+
+    initStartedRef.current = true;
+    const initConversation = async () => {
+      console.log('Chat: Initializing conversation', { modelId, providerId, defaultTitle });
+      try {
+        const shouldCreateNewConversation = !currentConversation
+          || currentConversation.model_id !== modelId
+          || currentConversation.provider_id !== providerId;
+
+        if (shouldCreateNewConversation) {
+          console.log('Chat: Creating new conversation...');
+          const conversation = await createConversation({
+            title: defaultTitle,
+            modelId,
+            providerId,
+          });
+          console.log('Chat: Conversation created', conversation);
+        } else {
+          console.log('Chat: Using existing conversation', currentConversation);
+        }
+        setInitialized(true);
+      } catch (error) {
+        console.error('Chat: Failed to initialize conversation', error);
+        initStartedRef.current = false;
+      }
+    };
+    initConversation();
   }, [initialized, currentConversation, createConversation, defaultTitle, modelId, providerId]);
 
   // Load messages when conversation changes
@@ -76,8 +90,22 @@ export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }
 
     setMessages((prev) => [...prev, userMessage]);
 
-    // Send message and get response
-    await sendMessage({ conversationId: currentConversation.id, content });
+    try {
+      // Send message and get response
+      await sendMessage({ conversationId: currentConversation.id, content });
+    } catch (error) {
+      console.error('Chat send failed:', error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        conversation_id: currentConversation.id,
+        role: 'Assistant',
+        content: 'No pude responder por un error del proveedor/modelo. Revisa la configuración o cambia de modelo.',
+        tokens: null,
+        latency_ms: null,
+        created_at: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
   };
 
   if (!initialized || !currentConversation) {
@@ -85,7 +113,7 @@ export function ChatInterface({ modelId, providerId, defaultTitle = 'New Chat' }
       <div className="flex-1 flex items-center justify-center text-text-secondary">
         <div className="flex flex-col items-center gap-3">
           <div className="w-12 h-12 border-4 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin"></div>
-          <p className="text-sm">Setting up chat...</p>
+          <p className="text-sm">Preparando chat...</p>
         </div>
       </div>
     );

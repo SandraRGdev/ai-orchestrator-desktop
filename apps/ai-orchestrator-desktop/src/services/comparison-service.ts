@@ -46,7 +46,9 @@ async function getDemoComparisonResult(providerId: string, modelId: string): Pro
 
 export class ComparisonService {
   async runComparison(req: ComparisonRequest): Promise<ComparisonResult[]> {
-    if (DEMO_MODE) {
+    const isDemoComparison = DEMO_MODE || req.model_configs.some(config => config.provider_id.startsWith('demo-'));
+
+    if (isDemoComparison) {
       const results = await Promise.all(
         req.model_configs.map(config =>
           getDemoComparisonResult(config.provider_id, config.model_id)

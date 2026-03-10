@@ -1,10 +1,11 @@
 use crate::models::{
     agent_definition::AgentDefinition,
     workflow::{Workflow, WorkflowNode, FlowType},
-    workflow_execution::{WorkflowExecution, ExecutionStatus, WorkflowResult, NodeResult},
+    workflow_execution::{WorkflowResult, NodeResult},
 };
 use crate::providers::trait_definition::{PromptRequest, Message as ProviderMessage, MessageRole, ModelProvider};
 use std::sync::Arc;
+use std::collections::{HashMap, VecDeque};
 use uuid::Uuid;
 
 pub struct AgentExecutor {
@@ -26,6 +27,15 @@ impl AgentExecutor {
 
     pub fn register_agent(&mut self, agent: AgentDefinition) {
         self.agents.push(agent);
+    }
+
+    pub fn clear_runtime(&mut self) {
+        self.providers.clear();
+        self.agents.clear();
+    }
+
+    pub fn providers_len(&self) -> usize {
+        self.providers.len()
     }
 
     pub async fn execute_workflow(&self, workflow: &Workflow, input: String)
@@ -138,11 +148,12 @@ impl AgentExecutor {
     async fn execute_agent(&self, agent: &AgentDefinition, input: String)
         -> Result<NodeResult, ExecutionError>
     {
-        let provider = self.providers.iter()
-            .find(|p| p.provider_id() == agent.config.provider_id)
-            .ok_or(ExecutionError::ProviderNotFound(agent.config.provider_id.clone()))?;
-
-        Self::execute_agent_with_providers(agent, &[provider.clone()], input, Uuid::new_v4().to_string()).await
+        Self::execute_agent_with_providers(
+            agent,
+            &self.providers,
+            input,
+            Uuid::new_v4().to_string(),
+        ).await
     }
 
     async fn execute_agent_with_providers(
@@ -151,14 +162,14 @@ impl AgentExecutor {
         input: String,
         node_id: String,
     ) -> Result<NodeResult, ExecutionError> {
-        let provider = providers.iter()
-            .find(|p| p.provider_id() == agent.config.provider_id)
+        let provider = Self::resolve_provider(agent, providers)
             .ok_or(ExecutionError::ProviderNotFound(agent.config.provider_id.clone()))?;
 
         let start = std::time::Instant::now();
+        let model_id = Self::resolve_model_id(provider.provider_id(), &agent.config.provider_id, &agent.config.model_id);
 
         let request = PromptRequest {
-            model: agent.config.model_id.clone(),
+            model: model_id,
             messages: vec![
                 ProviderMessage {
                     role: MessageRole::System,
@@ -188,40 +199,91 @@ impl AgentExecutor {
         })
     }
 
+    fn resolve_provider<'a>(
+        agent: &AgentDefinition,
+        providers: &'a [Arc<dyn ModelProvider + Send + Sync>],
+    ) -> Option<&'a Arc<dyn ModelProvider + Send + Sync>> {
+        providers
+            .iter()
+            .find(|p| p.provider_id() == agent.config.provider_id)
+            // OpenRouter can route many model families, so use it as a smart fallback.
+            .or_else(|| providers.iter().find(|p| p.provider_id() == "openrouter"))
+            .or_else(|| providers.first())
+    }
+
+    fn resolve_model_id(provider_id: &str, configured_provider_id: &str, model_id: &str) -> String {
+        if provider_id != "openrouter" || model_id.contains('/') {
+            return model_id.to_string();
+        }
+
+        let prefix = match configured_provider_id {
+            "openai" => "openai",
+            "anthropic" => "anthropic",
+            "google" => "google",
+            "groq" => "meta-llama",
+            "openrouter" => return model_id.to_string(),
+            _ => {
+                if model_id.starts_with("claude-") {
+                    "anthropic"
+                } else if model_id.starts_with("gemini-") {
+                    "google"
+                } else if model_id.starts_with("gpt-") || model_id.starts_with("o1-") {
+                    "openai"
+                } else {
+                    return model_id.to_string();
+                }
+            }
+        };
+
+        format!("{}/{}", prefix, model_id)
+    }
+
     fn topological_sort(&self, workflow: &Workflow) -> Result<Vec<WorkflowNode>, ExecutionError> {
         let mut sorted = Vec::new();
-        let mut in_degree: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        let mut in_degree: HashMap<String, usize> = HashMap::new();
+        let mut adjacency: HashMap<String, Vec<String>> = HashMap::new();
 
         for node in &workflow.nodes {
             in_degree.insert(node.id.clone(), 0);
+            adjacency.entry(node.id.clone()).or_default();
         }
 
         for node in &workflow.nodes {
-            for dep in &node.dependencies {
-                *in_degree.entry(dep.clone()).or_insert(0) += 1;
+            let degree = node.dependencies.len();
+            in_degree.insert(node.id.clone(), degree);
+
+            for dependency in &node.dependencies {
+                if !in_degree.contains_key(dependency) {
+                    return Err(ExecutionError::InvalidWorkflow);
+                }
+                adjacency.entry(dependency.clone()).or_default().push(node.id.clone());
             }
         }
 
-        let mut queue: Vec<String> = in_degree.iter()
+        let mut queue: VecDeque<String> = in_degree.iter()
             .filter(|(_, &degree)| degree == 0)
             .map(|(id, _)| id.clone())
             .collect();
 
-        while let Some(node_id) = queue.pop() {
+        while let Some(node_id) = queue.pop_front() {
             if let Some(node) = workflow.nodes.iter().find(|n| n.id == node_id) {
                 sorted.push(node.clone());
             }
 
-            for node in &workflow.nodes {
-                if node.dependencies.contains(&node_id) {
-                    if let Some(degree) = in_degree.get_mut(&node.id) {
+            if let Some(dependents) = adjacency.get(&node_id) {
+                for dependent_id in dependents {
+                    if let Some(degree) = in_degree.get_mut(dependent_id) {
                         *degree -= 1;
                         if *degree == 0 {
-                            queue.push(node.id.clone());
+                            queue.push_back(dependent_id.clone());
                         }
                     }
                 }
             }
+        }
+
+        if sorted.len() != workflow.nodes.len() {
+            return Err(ExecutionError::InvalidWorkflow);
         }
 
         Ok(sorted)
@@ -236,19 +298,19 @@ impl Default for AgentExecutor {
 
 #[derive(Debug, thiserror::Error)]
 pub enum ExecutionError {
-    #[error("Agent not found: {0}")]
+    #[error("Agente no encontrado: {0}")]
     AgentNotFound(String),
 
-    #[error("Provider not found: {0}")]
+    #[error("Proveedor no encontrado: {0}")]
     ProviderNotFound(String),
 
-    #[error("Provider {0} error: {1}")]
+    #[error("Error del proveedor {0}: {1}")]
     ProviderError(String, String),
 
-    #[error("Invalid workflow")]
+    #[error("Flujo inválido")]
     InvalidWorkflow,
 
-    #[error("Join error: {0}")]
+    #[error("Error de ejecución paralela: {0}")]
     JoinError(String),
 }
 

@@ -54,6 +54,10 @@ export interface CreateConversation {
   provider_id: string;
 }
 
+export interface UpdateConversationTitle {
+  title: string;
+}
+
 export interface SendMessageRequest {
   conversation_id: string;
   content: string;
@@ -90,4 +94,3 @@ export interface ComparisonResult {
   cost_usd: number;
   created_at: string;
 }
-

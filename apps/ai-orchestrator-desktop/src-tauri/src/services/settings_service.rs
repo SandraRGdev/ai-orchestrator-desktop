@@ -68,6 +68,7 @@ impl SettingsService {
     pub async fn set_theme(&self, theme: &str) -> Result<(), SettingsError> {
         self.set("theme", theme).await
     }
+
 }
 
 #[cfg(test)]

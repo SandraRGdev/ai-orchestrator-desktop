@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import { WelcomeStep } from './welcome-step';
-import { MasterPasswordStep } from './master-password-step';
 import { ProviderSetupStep } from './provider-setup-step';
 import { CompletionStep } from './completion-step';
 
-type Step = 'welcome' | 'password' | 'providers' | 'complete';
+type Step = 'welcome' | 'providers' | 'complete';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -13,10 +12,9 @@ interface OnboardingWizardProps {
 
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>('welcome');
-  const [masterPassword, setMasterPassword] = useState('');
   const [providers, setProviders] = useState<any[]>([]);
 
-  const steps: Step[] = ['welcome', 'password', 'providers', 'complete'];
+  const steps: Step[] = ['welcome', 'providers', 'complete'];
   const currentIndex = steps.indexOf(currentStep);
 
   const handleNext = () => {
@@ -29,11 +27,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     if (prevStep) setCurrentStep(prevStep);
   };
 
-  const handlePasswordSet = (password: string) => {
-    setMasterPassword(password);
-    handleNext();
-  };
-
   const handleProvidersConfigured = (configuredProviders: any[]) => {
     setProviders(configuredProviders);
     handleNext();
@@ -41,13 +34,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
   const handleComplete = async () => {
     try {
-      // Check if running in Tauri context
-      const isTauri = typeof window !== 'undefined' && window.__TAURI__;
-
-      if (isTauri) {
-        // Unlock the app with the master password
-        await invoke('unlock_app', { password: masterPassword });
-
+      if (isTauri()) {
         // Mark onboarding as completed
         await invoke('complete_onboarding');
       } else {
@@ -94,13 +81,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         <div className="flex-1 overflow-y-auto p-8">
           {currentStep === 'welcome' && (
             <WelcomeStep onNext={handleNext} />
-          )}
-
-          {currentStep === 'password' && (
-            <MasterPasswordStep
-              onNext={handlePasswordSet}
-              onBack={handleBack}
-            />
           )}
 
           {currentStep === 'providers' && (

@@ -63,14 +63,14 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Type a command or search..."
+          placeholder="Escribe un comando o busca..."
           className="w-full px-6 py-4 text-lg border-b border-gray-200 dark:border-gray-700 bg-transparent dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           autoFocus
         />
 
         {filteredCommands.length === 0 ? (
           <div className="py-12 text-center text-gray-500 dark:text-gray-400">
-            No commands found
+            No se encontraron comandos
           </div>
         ) : (
           <div className="max-h-96 overflow-y-auto py-2">
@@ -102,10 +102,10 @@ export function CommandPalette({ commands }: CommandPaletteProps) {
 
         <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-3 text-xs text-gray-500 dark:text-gray-400 flex justify-between">
           <div className="flex gap-4">
-            <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">↑↓</kbd> navigate</span>
-            <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">↵</kbd> select</span>
+            <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">↑↓</kbd> navegar</span>
+            <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">↵</kbd> seleccionar</span>
           </div>
-          <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">esc</kbd> close</span>
+          <span><kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">esc</kbd> cerrar</span>
         </div>
       </div>
     </div>

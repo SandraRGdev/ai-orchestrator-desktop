@@ -25,7 +25,7 @@ export function CompletionStep({ onComplete, providers }: CompletionStepProps) {
         <ul className="space-y-2 text-sm text-green-800 dark:text-green-300">
           <li className="flex items-start">
             <span className="mr-2">•</span>
-            <span>Contraseña maestra creada y asegurada</span>
+            <span>Onboarding completado correctamente</span>
           </li>
           {configuredCount > 0 ? (
             <li className="flex items-start">

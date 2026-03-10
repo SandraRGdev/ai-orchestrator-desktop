@@ -38,24 +38,24 @@ export const globalShortcuts: Omit<Shortcut, 'action'>[] = [
   {
     key: 'k',
     ctrl: true,
-    description: 'Open command palette',
+    description: 'Abrir paleta de comandos',
   },
   {
     key: '/',
-    description: 'Focus search',
+    description: 'Enfocar búsqueda',
   },
   {
     key: 'n',
     ctrl: true,
-    description: 'New conversation',
+    description: 'Nueva conversación',
   },
   {
     key: 'b',
     ctrl: true,
-    description: 'Toggle sidebar',
+    description: 'Alternar barra lateral',
   },
   {
     key: '?',
-    description: 'Show keyboard shortcuts',
+    description: 'Mostrar atajos de teclado',
   },
 ];

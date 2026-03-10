@@ -92,15 +92,15 @@ impl ModelProvider for GroqProvider {
                 id: "llama-3.3-70b-versatile".to_string(),
                 name: "Llama 3.3 70B Versatile".to_string(),
                 context_length: Some(128000),
-                input_cost_per_1k: Some(0.0),
-                output_cost_per_1k: Some(0.0),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
             ModelInfo {
                 id: "mixtral-8x7b-32768".to_string(),
                 name: "Mixtral 8x7b".to_string(),
                 context_length: Some(32768),
-                input_cost_per_1k: Some(0.0),
-                output_cost_per_1k: Some(0.0),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
         ])
     }

@@ -7,6 +7,9 @@ interface MessageBubbleProps {
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'User';
   const isSystem = message.role === 'System';
+  const tokens = message.tokens ?? 0;
+  const latency = message.latency_ms ?? 0;
+  const hasMetrics = tokens > 0 || latency > 0;
 
   if (isSystem) {
     return (
@@ -31,15 +34,16 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         }`}
       >
         <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.content}</div>
-        {message.tokens && (
+        {hasMetrics && (
           <div className={`text-xs mt-2 flex items-center gap-2 ${isUser ? 'opacity-70' : 'text-text-tertiary'}`}>
-            <span>{message.tokens} tokens</span>
-            {message.latency_ms && (
+            {tokens > 0 && <span>{tokens} tokens</span>}
+            {tokens > 0 && latency > 0 && (
               <>
                 <span className="text-border-default">•</span>
-                <span>{message.latency_ms}ms</span>
+                <span>{latency}ms</span>
               </>
             )}
+            {tokens === 0 && latency > 0 && <span>{latency}ms</span>}
           </div>
         )}
       </div>

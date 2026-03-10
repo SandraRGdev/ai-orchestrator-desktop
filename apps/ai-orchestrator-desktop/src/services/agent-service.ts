@@ -11,10 +11,10 @@ export const DEMO_MODE = false;
 
 // Demo agent responses
 const DEMO_AGENT_RESPONSES: Record<string, string> = {
-  'Researcher': "🔬 **Research Agent Output**\n\nAfter conducting thorough research on this topic, here are my findings:\n\n**Key Discoveries:**\n- Multiple credible sources confirm this approach\n- The consensus in the field supports this direction\n- Recent studies have shown promising results\n\n**References:**\n1. Academic source on this topic (2023)\n2. Industry analysis report\n3. Expert consensus documentation\n\n**Recommendation:** Proceed with this approach based on current evidence.",
-  'Writer': "✍️ **Writer Agent Output**\n\nHere's a polished piece based on your request:\n\n---\n\nIn today's rapidly evolving landscape, the ability to adapt and innovate has become paramount. Organizations that embrace change and foster creativity are finding themselves at the forefront of their industries.\n\nThe key lies in balancing strategic vision with practical execution. By aligning resources effectively and maintaining clear communication channels, teams can achieve remarkable results.\n\n---\n\nThis piece aims to engage your audience while conveying the core message clearly and effectively.",
-  'Analyst': "📊 **Analyst Agent Output**\n\n**Data Analysis Summary:**\n\nBased on the information provided, here's my analysis:\n\n**Trends Identified:**\n• Upward trajectory in key metrics\n• Seasonal patterns indicating cyclical behavior\n• Anomalous data points requiring investigation\n\n**Key Insights:**\n1. Primary drivers are X and Y factors\n2. Correlation coefficient of 0.78 suggests strong relationship\n3. Outlier in Q3 data needs review\n\n**Recommendations:**\n- Focus on high-impact areas identified\n- Monitor anomalous patterns\n- Consider seasonal adjustments in forecasting",
-  'Evaluator': "⚖️ **Evaluator Agent Output**\n\n**Evaluation Summary:**\n\nAfter reviewing all options, here's my assessment:\n\n**Option A:** Strong technical foundation, good scalability (Score: 8/10)\n**Option B:** Innovative approach, higher risk (Score: 7/10)\n**Option C:** Conservative but reliable (Score: 6/10)\n\n**Best Choice: Option A**\n\n**Rationale:**\n- Best balance of risk and reward\n- Proven track record\n- Alignment with stated objectives\n- Feasible within given constraints\n\nThe other options have merit but Option A provides the optimal path forward.",
+  'Researcher': "🔬 **Salida del Agente Investigador**\n\nDespués de investigar a fondo este tema, aquí están mis hallazgos:\n\n**Descubrimientos clave:**\n- Varias fuentes confiables respaldan este enfoque\n- El consenso del sector apoya esta dirección\n- Estudios recientes muestran resultados prometedores\n\n**Referencias:**\n1. Fuente académica sobre el tema (2023)\n2. Informe de análisis de industria\n3. Documentación de consenso experto\n\n**Recomendación:** continuar con este enfoque según la evidencia actual.",
+  'Writer': "✍️ **Salida del Agente Redactor**\n\nAquí tienes una versión pulida basada en tu solicitud:\n\n---\n\nEn un entorno que evoluciona rápidamente, la capacidad de adaptarse e innovar es clave. Las organizaciones que abrazan el cambio y fomentan la creatividad lideran sus sectores.\n\nLa clave está en equilibrar visión estratégica con ejecución práctica. Al alinear recursos y mantener una comunicación clara, los equipos logran resultados sobresalientes.\n\n---\n\nEste texto busca captar la atención y comunicar el mensaje de forma clara y efectiva.",
+  'Analyst': "📊 **Salida del Agente Analista**\n\n**Resumen de análisis de datos:**\n\nCon la información proporcionada, este es mi análisis:\n\n**Tendencias identificadas:**\n• Trayectoria al alza en métricas clave\n• Patrones estacionales con comportamiento cíclico\n• Puntos anómalos que requieren revisión\n\n**Insights clave:**\n1. Los impulsores principales son factores X e Y\n2. Correlación de 0.78, relación fuerte\n3. Un valor atípico en Q3 debe revisarse\n\n**Recomendaciones:**\n- Priorizar áreas de alto impacto\n- Monitorear patrones anómalos\n- Aplicar ajustes estacionales en pronósticos",
+  'Evaluator': "⚖️ **Salida del Agente Evaluador**\n\n**Resumen de evaluación:**\n\nTras revisar todas las opciones, esta es mi evaluación:\n\n**Opción A:** Base técnica sólida y buena escalabilidad (Puntuación: 8/10)\n**Opción B:** Enfoque innovador, mayor riesgo (Puntuación: 7/10)\n**Opción C:** Conservadora pero fiable (Puntuación: 6/10)\n\n**Mejor elección: Opción A**\n\n**Motivo:**\n- Mejor equilibrio riesgo/beneficio\n- Historial probado\n- Alineación con objetivos\n- Viable con las restricciones actuales\n\nLas otras opciones tienen valor, pero la Opción A ofrece la ruta más sólida.",
 };
 
 async function getAgentResponse(agentName: string): Promise<string> {
@@ -26,12 +26,12 @@ async function getAgentResponse(agentName: string): Promise<string> {
 export const DEMO_PRESET_AGENTS: AgentDefinition[] = [
   {
     id: 'preset-researcher',
-    name: 'Researcher',
-    description: 'Conducts thorough research on any topic',
+    name: 'Investigador',
+    description: 'Realiza investigación profunda sobre cualquier tema',
     agent_type: 'Researcher',
     is_preset: true,
     config: {
-      system_prompt: 'You are a research assistant.',
+      system_prompt: 'Eres un asistente de investigación.',
       temperature: 0.3,
       max_tokens: 2000,
       model_id: 'claude-3-5-sonnet-20241022',
@@ -44,12 +44,12 @@ export const DEMO_PRESET_AGENTS: AgentDefinition[] = [
   },
   {
     id: 'preset-writer',
-    name: 'Writer',
-    description: 'Creates well-written content',
+    name: 'Redactor',
+    description: 'Crea contenido bien redactado',
     agent_type: 'Writer',
     is_preset: true,
     config: {
-      system_prompt: 'You are a professional writer.',
+      system_prompt: 'Eres un redactor profesional.',
       temperature: 0.7,
       max_tokens: 2000,
       model_id: 'gpt-4o',
@@ -62,12 +62,12 @@ export const DEMO_PRESET_AGENTS: AgentDefinition[] = [
   },
   {
     id: 'preset-analyst',
-    name: 'Analyst',
-    description: 'Analyzes data and provides insights',
+    name: 'Analista',
+    description: 'Analiza datos y aporta conclusiones',
     agent_type: 'Analyst',
     is_preset: true,
     config: {
-      system_prompt: 'You are a data analyst.',
+      system_prompt: 'Eres un analista de datos.',
       temperature: 0.2,
       max_tokens: 2000,
       model_id: 'claude-3-5-sonnet-20241022',
@@ -80,12 +80,12 @@ export const DEMO_PRESET_AGENTS: AgentDefinition[] = [
   },
   {
     id: 'preset-evaluator',
-    name: 'Evaluator',
-    description: 'Evaluates and selects the best response',
+    name: 'Evaluador',
+    description: 'Evalúa y selecciona la mejor respuesta',
     agent_type: 'Evaluator',
     is_preset: true,
     config: {
-      system_prompt: 'You are an evaluator.',
+      system_prompt: 'Eres un evaluador.',
       temperature: 0.3,
       max_tokens: 2000,
       model_id: 'claude-3-5-sonnet-20241022',
@@ -159,7 +159,7 @@ export async function listWorkflows(): Promise<Workflow[]> {
 
 export async function getWorkflow(id: string): Promise<Workflow> {
   if (DEMO_MODE) {
-    throw new Error('Demo mode: workflow not found');
+    throw new Error('Modo demo: flujo no encontrado');
   }
   return await invoke('get_workflow', { id });
 }
@@ -169,6 +169,21 @@ export async function deleteWorkflow(id: string): Promise<void> {
     return;
   }
   await invoke('delete_workflow', { id });
+}
+
+export async function updateWorkflow(id: string, req: CreateWorkflowRequest): Promise<Workflow> {
+  if (DEMO_MODE) {
+    return {
+      id,
+      name: req.name,
+      description: req.description,
+      flow_type: req.flow_type,
+      nodes: req.nodes,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  }
+  return await invoke('update_workflow', { id, req });
 }
 
 export async function executeWorkflow(
@@ -198,7 +213,7 @@ export async function executeWorkflow(
       status: 'Completed',
       result: {
         node_results: nodeResults,
-        final_output: `✅ **Workflow Complete**\n\nProcessed ${nodeResults.length} agents successfully.\n\n**Final Output:**\n${nodeResults[nodeResults.length - 1]?.output || 'No output'}`,
+        final_output: `✅ **Flujo completado**\n\nSe procesaron ${nodeResults.length} agentes correctamente.\n\n**Salida final:**\n${nodeResults[nodeResults.length - 1]?.output || 'Sin salida'}`,
       },
       error_message: null,
       started_at: new Date(Date.now() - 2000).toISOString(),
@@ -210,7 +225,7 @@ export async function executeWorkflow(
 
 export async function getWorkflowExecution(id: string): Promise<WorkflowExecution> {
   if (DEMO_MODE) {
-    throw new Error('Demo mode: execution not found');
+    throw new Error('Modo demo: ejecución no encontrada');
   }
   return await invoke('get_workflow_execution', { id });
 }

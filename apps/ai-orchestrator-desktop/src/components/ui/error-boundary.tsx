@@ -30,10 +30,10 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="text-center space-y-6 max-w-lg">
             <div className="text-7xl">⚠️</div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Something went wrong
+              Algo salió mal
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              {this.state.error?.message || 'An unexpected error occurred'}
+              {this.state.error?.message || 'Ocurrió un error inesperado'}
             </p>
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-left">
               <p className="text-sm text-red-800 dark:text-red-300 font-mono text-xs overflow-auto max-h-32">
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 onClick={() => window.location.reload()}
                 className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                Reload Application
+                Recargar aplicación
               </button>
               <button
                 onClick={() => {
@@ -53,11 +53,11 @@ export class ErrorBoundary extends Component<Props, State> {
                 }}
                 className="w-full px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                Try Again
+                Reintentar
               </button>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              If this problem persists, please report the issue on GitHub.
+              Si el problema persiste, reporta el error en GitHub.
             </p>
           </div>
         </div>

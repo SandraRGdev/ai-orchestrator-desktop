@@ -112,7 +112,7 @@ pub fn run() {
 
             // Manage services
             app.manage(comparison_service);
-            app.manage(agent_executor);
+            app.manage(tokio::sync::Mutex::new(agent_executor));
 
             Ok(())
         })
@@ -129,6 +129,7 @@ pub fn run() {
             commands::get_conversation,
             commands::list_conversations,
             commands::delete_conversation,
+            commands::update_conversation_title,
             commands::send_message,
             commands::get_conversation_messages,
             commands::run_comparison,
@@ -143,6 +144,7 @@ pub fn run() {
             commands::list_workflows,
             commands::get_workflow,
             commands::delete_workflow,
+            commands::update_workflow,
             commands::execute_workflow,
             commands::get_workflow_execution,
             commands::list_workflow_executions,

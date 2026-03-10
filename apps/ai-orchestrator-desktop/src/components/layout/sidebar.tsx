@@ -2,18 +2,21 @@ import { sidebarOpenAtom, currentViewAtom } from '../../stores/atoms';
 import { useAtom, useSetAtom } from 'jotai';
 import { conversationService } from '../../services/conversation-service';
 import { conversationsAtom, currentConversationAtom, messagesAtom, loadConversationsAtom } from '../../stores/chat-atom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function Sidebar() {
   const [open, setOpen] = useAtom(sidebarOpenAtom);
   const [currentView, setCurrentView] = useAtom(currentViewAtom);
   const [conversations, setConversations] = useAtom(conversationsAtom);
+  const [currentConversation] = useAtom(currentConversationAtom);
   const setCurrentConversation = useSetAtom(currentConversationAtom);
   const setMessages = useSetAtom(messagesAtom);
   const loadConversations = useSetAtom(loadConversationsAtom);
+  const [editingConversationId, setEditingConversationId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
 
   const navItems = [
-    { id: 'chat', label: 'Chat', icon: '💬' },
+    { id: 'chat', label: 'Conversación', icon: '💬' },
     { id: 'compare', label: 'Comparar', icon: '⚖️' },
     { id: 'agents', label: 'Agentes', icon: '🤖' },
     { id: 'providers', label: 'Proveedores', icon: '🔌' },
@@ -54,13 +57,45 @@ export function Sidebar() {
     e.stopPropagation(); // Prevent loading the conversation when clicking delete
     try {
       await conversationService.deleteConversation(conversationId);
-      // Remove from local state
-      setConversations(conversations.filter(c => c.id !== conversationId));
+      setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+      if (currentConversation?.id === conversationId) {
+        setCurrentConversation(null);
+        setMessages([]);
+      }
+      window.dispatchEvent(new CustomEvent('refresh-conversations'));
     } catch (error) {
       console.error('Failed to delete conversation:', error);
     }
   };
 
+  const handleStartRename = (conversationId: string, currentTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingConversationId(conversationId);
+    setEditingTitle(currentTitle);
+  };
+
+  const handleSaveRename = async (conversationId: string, currentTitle: string) => {
+    const nextTitle = editingTitle.trim();
+    if (!nextTitle || nextTitle === currentTitle) {
+      setEditingConversationId(null);
+      setEditingTitle('');
+      return;
+    }
+
+    try {
+      const updated = await conversationService.updateConversationTitle(conversationId, { title: nextTitle });
+      setConversations((prev) => prev.map((c) => (c.id === conversationId ? updated : c)));
+      if (currentConversation?.id === conversationId) {
+        setCurrentConversation(updated);
+      }
+      window.dispatchEvent(new CustomEvent('refresh-conversations'));
+    } catch (error) {
+      console.error('Failed to rename conversation:', error);
+    } finally {
+      setEditingConversationId(null);
+      setEditingTitle('');
+    }
+  };
 
   return (
     <aside className={`${open ? 'w-64' : 'w-16'} bg-gradient-secondary border-r border-border-subtle text-text-primary transition-all duration-300 flex flex-col relative`}>
@@ -119,18 +154,49 @@ export function Sidebar() {
                 {conversations.slice(0, 10).map((conv) => (
                   <div
                     key={conv.id}
-                    className="group flex items-center gap-1 rounded-lg hover:bg-surface/50 transition-all duration-200"
+                    className="group flex min-w-0 items-center gap-1 rounded-lg hover:bg-surface/50 transition-all duration-200"
                   >
+                    {editingConversationId === conv.id ? (
+                      <input
+                        autoFocus
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onBlur={() => handleSaveRename(conv.id, conv.title)}
+                        onKeyDown={(e) => {
+                          e.stopPropagation();
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSaveRename(conv.id, conv.title);
+                          }
+                          if (e.key === 'Escape') {
+                            setEditingConversationId(null);
+                            setEditingTitle('');
+                          }
+                        }}
+                        className="min-w-0 flex-1 bg-surface border border-accent-primary/40 text-text-primary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+                      />
+                    ) : (
+                      <button
+                        onClick={() => handleLoadConversation(conv.id)}
+                        className="min-w-0 flex-1 text-left px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-all duration-200 truncate focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+                        title={conv.title}
+                      >
+                        {conv.title}
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleLoadConversation(conv.id)}
-                      className="flex-1 text-left px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-all duration-200 truncate focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
-                      title={conv.title}
+                      onClick={(e) => handleStartRename(conv.id, conv.title, e)}
+                      className={`${editingConversationId === conv.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} shrink-0 p-2 hover:text-accent-primary text-text-tertiary hover:bg-accent-primary/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-primary/50`}
+                      title="Renombrar conversación"
                     >
-                      {conv.title}
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L12 15l-4 1 1-4 8.586-8.586z" />
+                      </svg>
                     </button>
                     <button
                       onClick={(e) => handleDeleteConversation(conv.id, e)}
-                      className="opacity-0 group-hover:opacity-100 p-2 hover:text-red-500 text-text-tertiary hover:bg-red-500/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                      className={`${editingConversationId === conv.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} shrink-0 p-2 hover:text-red-500 text-text-tertiary hover:bg-red-500/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50`}
                       title="Eliminar conversación"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

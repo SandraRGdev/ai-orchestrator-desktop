@@ -19,42 +19,40 @@ export interface ModelInfo {
 // Demo providers for testing without API keys
 export const DEMO_PROVIDERS: ProviderConfig[] = [
   {
-    id: 'demo-openai',
-    name: 'OpenAI (Demo)',
-    provider_type: 'openai',
+    id: 'demo-openrouter',
+    name: 'OpenRouter (Demo)',
+    provider_type: 'openrouter',
     enabled: true,
   },
   {
-    id: 'demo-anthropic',
-    name: 'Anthropic (Demo)',
+    id: 'demo-claude',
+    name: 'Claude (Demo)',
     provider_type: 'anthropic',
     enabled: true,
   },
   {
-    id: 'demo-local',
-    name: 'Local LLM (Demo)',
-    provider_type: 'ollama',
-    base_url: 'http://localhost:11434',
+    id: 'demo-zai',
+    name: 'Z.AI (Demo)',
+    provider_type: 'openai',
+    base_url: 'https://api.z.ai/api/paas/v4',
     enabled: true,
   },
 ];
 
 export const DEMO_MODELS: Record<string, ModelInfo[]> = {
-  'demo-openai': [
-    { id: 'gpt-4o', name: 'GPT-4o', context_length: 128000, input_cost_per_1k: 0.005, output_cost_per_1k: 0.015 },
-    { id: 'gpt-4o-mini', name: 'GPT-4o Mini', context_length: 128000, input_cost_per_1k: 0.00015, output_cost_per_1k: 0.0006 },
-    { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', context_length: 128000, input_cost_per_1k: 0.01, output_cost_per_1k: 0.03 },
-    { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', context_length: 16385, input_cost_per_1k: 0.0005, output_cost_per_1k: 0.0015 },
+  'demo-openrouter': [
+    { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini (OpenRouter)', context_length: 128000, input_cost_per_1k: 0.00015, output_cost_per_1k: 0.0006 },
+    { id: 'meta-llama/llama-3.1-70b-instruct', name: 'Llama 3.1 70B (OpenRouter)', context_length: 131072, input_cost_per_1k: 0.00059, output_cost_per_1k: 0.00079 },
+    { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (Gratis)', context_length: 1000000, input_cost_per_1k: 0, output_cost_per_1k: 0 },
   ],
-  'demo-anthropic': [
+  'demo-claude': [
     { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet', context_length: 200000, input_cost_per_1k: 0.003, output_cost_per_1k: 0.015 },
     { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku', context_length: 200000, input_cost_per_1k: 0.0008, output_cost_per_1k: 0.004 },
     { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus', context_length: 200000, input_cost_per_1k: 0.015, output_cost_per_1k: 0.075 },
   ],
-  'demo-local': [
-    { id: 'llama3.2', name: 'Llama 3.2', context_length: 128000 },
-    { id: 'llama3.1', name: 'Llama 3.1', context_length: 128000 },
-    { id: 'mistral', name: 'Mistral 7B', context_length: 32768 },
+  'demo-zai': [
+    { id: 'glm-4.5-air', name: 'GLM-4.5 Air', context_length: 128000, input_cost_per_1k: 0.0005, output_cost_per_1k: 0.0015 },
+    { id: 'glm-4.5', name: 'GLM-4.5', context_length: 128000, input_cost_per_1k: 0.001, output_cost_per_1k: 0.003 },
   ],
 };
 

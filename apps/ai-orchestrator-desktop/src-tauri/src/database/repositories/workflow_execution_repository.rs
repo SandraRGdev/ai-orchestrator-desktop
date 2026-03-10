@@ -58,13 +58,7 @@ impl WorkflowExecutionRepository {
             _ => ExecutionStatus::Pending,
         };
 
-        let result: Option<WorkflowResult> = if let Some(result_json) = row.try_get("result_json").ok() {
-            let json_str: String = result_json;
-            Some(serde_json::from_str(&json_str)
-                .map_err(|e| DatabaseError::QueryError(e.to_string()))?)
-        } else {
-            None
-        };
+        let result = Self::parse_result(row.try_get("result_json").ok())?;
 
         Ok(WorkflowExecution {
             id: row.try_get("id")?,
@@ -150,13 +144,7 @@ impl WorkflowExecutionRepository {
                 _ => ExecutionStatus::Pending,
             };
 
-            let result: Option<WorkflowResult> = if let Some(result_json) = row.try_get("result_json").ok() {
-                let json_str: String = result_json;
-                Some(serde_json::from_str(&json_str)
-                    .map_err(|e| DatabaseError::QueryError(e.to_string()))?)
-            } else {
-                None
-            };
+            let result = Self::parse_result(row.try_get("result_json").ok())?;
 
             executions.push(WorkflowExecution {
                 id: row.try_get("id").unwrap_or_default(),
@@ -171,5 +159,16 @@ impl WorkflowExecutionRepository {
         }
 
         Ok(executions)
+    }
+
+    fn parse_result(result_json: Option<String>) -> Result<Option<WorkflowResult>, DatabaseError> {
+        match result_json {
+            Some(json) if !json.trim().is_empty() => {
+                let parsed: WorkflowResult = serde_json::from_str(json.trim())
+                    .map_err(|e| DatabaseError::QueryError(e.to_string()))?;
+                Ok(Some(parsed))
+            }
+            _ => Ok(None),
+        }
     }
 }

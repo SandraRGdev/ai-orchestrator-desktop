@@ -1,6 +1,8 @@
 import { atom } from 'jotai';
 import type { Conversation, Message } from '../types/generated';
 
+let pendingConversationCreation: { key: string; promise: Promise<Conversation> } | null = null;
+
 // Current conversation state
 export const currentConversationAtom = atom<Conversation | null>(null);
 
@@ -75,12 +77,24 @@ export const createConversationAtom = atom(
     console.log('createConversationAtom: Creating conversation', { title, modelId, providerId });
     try {
       const { conversationService } = await import('../services/conversation-service');
+      const dedupeKey = `${providerId}:${modelId}:${title}`;
+
+      if (pendingConversationCreation?.key === dedupeKey) {
+        const existingConversation = await pendingConversationCreation.promise;
+        set(currentConversationAtom, existingConversation);
+        set(messagesAtom, []);
+        return existingConversation;
+      }
+
       console.log('createConversationAtom: Calling conversationService.createConversation');
-      const conversation = await conversationService.createConversation({
+      const createPromise = conversationService.createConversation({
         title,
         model_id: modelId,
         provider_id: providerId,
       });
+
+      pendingConversationCreation = { key: dedupeKey, promise: createPromise };
+      const conversation = await createPromise;
       console.log('createConversationAtom: Conversation created successfully', conversation);
       set(currentConversationAtom, conversation);
       set(messagesAtom, []);
@@ -92,6 +106,8 @@ export const createConversationAtom = atom(
     } catch (error) {
       console.error('createConversationAtom: Failed to create conversation', error);
       throw error;
+    } finally {
+      pendingConversationCreation = null;
     }
   }
 );

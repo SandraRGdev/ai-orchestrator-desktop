@@ -1,9 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
-
-// Check if running in Tauri context
-const isTauri = () => {
-  return typeof window !== 'undefined' && window.__TAURI__;
-};
+import { invoke, isTauri } from '@tauri-apps/api/core';
 
 export class TauriService {
   async unlockApp(password: string): Promise<void> {

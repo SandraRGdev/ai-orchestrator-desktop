@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-
-// Check if running in Tauri context
-const isTauri = () => {
-  return typeof window !== 'undefined' && window.__TAURI__;
-};
+import { invoke, isTauri } from '@tauri-apps/api/core';
 
 export function useOnboarding() {
   const [isLoading, setIsLoading] = useState(true);

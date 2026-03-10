@@ -42,7 +42,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled || sending}
-          placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+          placeholder="Escribe un mensaje... (Enter para enviar, Shift+Enter para nueva línea)"
           className="flex-1 bg-surface border border-border-subtle text-text-primary rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-accent-primary/50 focus:border-accent-primary disabled:opacity-50 placeholder:text-text-secondary transition-all"
           rows={1}
           style={{ minHeight: '48px', maxHeight: '200px' }}
@@ -63,14 +63,14 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           {sending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              Sending
+              Enviando
             </>
           ) : (
             <>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
-              Send
+              Enviar
             </>
           )}
         </button>

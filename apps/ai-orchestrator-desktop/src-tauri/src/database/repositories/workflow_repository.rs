@@ -54,8 +54,7 @@ impl WorkflowRepository {
         };
 
         let config_json: String = row.try_get("config_json")?;
-        let nodes: Vec<WorkflowNode> = serde_json::from_str(&config_json)
-            .map_err(|e| DatabaseError::QueryError(e.to_string()))?;
+        let nodes = Self::parse_nodes(&config_json)?;
 
         Ok(Workflow {
             id: row.try_get("id")?,
@@ -87,8 +86,13 @@ impl WorkflowRepository {
             };
 
             let config_json: String = row.try_get("config_json")?;
-            let nodes: Vec<WorkflowNode> = serde_json::from_str(&config_json)
-                .map_err(|e| DatabaseError::QueryError(e.to_string()))?;
+            let nodes = match Self::parse_nodes(&config_json) {
+                Ok(parsed) => parsed,
+                Err(e) => {
+                    eprintln!("Skipping malformed workflow row: {}", e);
+                    continue;
+                }
+            };
 
             workflows.push(Workflow {
                 id: row.try_get("id").unwrap_or_default(),
@@ -104,12 +108,65 @@ impl WorkflowRepository {
         Ok(workflows)
     }
 
+    pub async fn update(&self, id: &str, req: CreateWorkflowRequest) -> Result<Workflow, DatabaseError> {
+        let now = chrono::Utc::now().to_rfc3339();
+        let flow_type_str = format!("{:?}", req.flow_type);
+        let config_json = serde_json::to_string(&req.nodes)
+            .map_err(|e| DatabaseError::QueryError(e.to_string()))?;
+
+        sqlx::query(
+            "UPDATE workflows
+             SET name = ?, description = ?, flow_type = ?, config_json = ?, updated_at = ?
+             WHERE id = ?"
+        )
+        .bind(&req.name)
+        .bind(&req.description)
+        .bind(&flow_type_str)
+        .bind(&config_json)
+        .bind(&now)
+        .bind(id)
+        .execute(&self.pool)
+        .await?;
+
+        self.get_by_id(id).await
+    }
+
     pub async fn delete(&self, id: &str) -> Result<(), DatabaseError> {
+        let mut tx = self.pool.begin().await?;
+
+        // Keep deletion compatible with old SQLite files:
+        // - some may not define ON DELETE CASCADE
+        // - some may not have workflow_executions yet
+        let has_executions_table: Option<String> = sqlx::query_scalar(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'workflow_executions' LIMIT 1"
+        )
+        .fetch_optional(&mut *tx)
+        .await?;
+
+        if has_executions_table.is_some() {
+            sqlx::query("DELETE FROM workflow_executions WHERE workflow_id = ?")
+                .bind(id)
+                .execute(&mut *tx)
+                .await?;
+        }
+
         sqlx::query("DELETE FROM workflows WHERE id = ?")
             .bind(id)
-            .execute(&self.pool)
+            .execute(&mut *tx)
             .await?;
 
+        tx.commit().await?;
+
         Ok(())
+    }
+
+    fn parse_nodes(config_json: &str) -> Result<Vec<WorkflowNode>, DatabaseError> {
+        let trimmed = config_json.trim();
+        if trimmed.is_empty() {
+            return Ok(vec![]);
+        }
+
+        serde_json::from_str(trimmed)
+            .map_err(|e| DatabaseError::QueryError(e.to_string()))
     }
 }

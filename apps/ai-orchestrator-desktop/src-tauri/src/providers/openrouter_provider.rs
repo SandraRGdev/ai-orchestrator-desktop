@@ -90,70 +90,92 @@ impl ModelProvider for OpenRouterProvider {
     }
 
     async fn list_models(&self) -> Result<Vec<ModelInfo>, ProviderError> {
-        // Popular OpenRouter models (verified IDs)
+        let response = self.client
+            .get(format!("{}/models", self.base_url))
+            .header("Authorization", format!("Bearer {}", self.api_key))
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            let json: serde_json::Value = response.json().await?;
+            let mut models = Vec::new();
+
+            if let Some(items) = json.get("data").and_then(|v| v.as_array()) {
+                for item in items {
+                    let id = item.get("id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or_default()
+                        .to_string();
+
+                    if id.is_empty() {
+                        continue;
+                    }
+
+                    let name = item.get("name")
+                        .and_then(|v| v.as_str())
+                        .map(|v| v.to_string())
+                        .unwrap_or_else(|| id.clone());
+
+                    let context_length = item.get("context_length")
+                        .and_then(|v| v.as_u64())
+                        .and_then(|v| u32::try_from(v).ok());
+                    let input_cost_per_1k = item
+                        .get("pricing")
+                        .and_then(|p| p.get("prompt"))
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse::<f64>().ok())
+                        .map(|v| v * 1000.0);
+                    let output_cost_per_1k = item
+                        .get("pricing")
+                        .and_then(|p| p.get("completion"))
+                        .and_then(|v| v.as_str())
+                        .and_then(|s| s.parse::<f64>().ok())
+                        .map(|v| v * 1000.0);
+
+                    models.push(ModelInfo {
+                        id,
+                        name,
+                        context_length,
+                        input_cost_per_1k,
+                        output_cost_per_1k,
+                    });
+                }
+            }
+
+            if !models.is_empty() {
+                return Ok(models);
+            }
+        }
+
+        // Fallback static list if /models is unavailable
         Ok(vec![
-            ModelInfo {
-                id: "anthropic/claude-3.5-sonnet".to_string(),
-                name: "Claude 3.5 Sonnet".to_string(),
-                context_length: Some(200000),
-                input_cost_per_1k: Some(0.003),
-                output_cost_per_1k: Some(0.015),
-            },
-            ModelInfo {
-                id: "anthropic/claude-3.5-sonnet:beta".to_string(),
-                name: "Claude 3.5 Sonnet (Beta)".to_string(),
-                context_length: Some(200000),
-                input_cost_per_1k: Some(0.003),
-                output_cost_per_1k: Some(0.015),
-            },
-            ModelInfo {
-                id: "anthropic/claude-3-opus".to_string(),
-                name: "Claude 3 Opus".to_string(),
-                context_length: Some(200000),
-                input_cost_per_1k: Some(0.015),
-                output_cost_per_1k: Some(0.075),
-            },
             ModelInfo {
                 id: "openai/gpt-4o".to_string(),
                 name: "GPT-4o".to_string(),
                 context_length: Some(128000),
-                input_cost_per_1k: Some(0.005),
-                output_cost_per_1k: Some(0.015),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
             ModelInfo {
                 id: "openai/gpt-4o-mini".to_string(),
                 name: "GPT-4o Mini".to_string(),
                 context_length: Some(128000),
-                input_cost_per_1k: Some(0.00015),
-                output_cost_per_1k: Some(0.0006),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
             ModelInfo {
-                id: "google/gemini-pro-1.5".to_string(),
-                name: "Gemini Pro 1.5".to_string(),
-                context_length: Some(1000000),
-                input_cost_per_1k: Some(0.00125),
-                output_cost_per_1k: Some(0.005),
-            },
-            ModelInfo {
-                id: "meta-llama/llama-3.1-405b-instruct".to_string(),
-                name: "Llama 3.1 405B Instruct".to_string(),
-                context_length: Some(131072),
-                input_cost_per_1k: Some(0.0027),
-                output_cost_per_1k: Some(0.0027),
+                id: "anthropic/claude-3.5-sonnet".to_string(),
+                name: "Claude 3.5 Sonnet".to_string(),
+                context_length: Some(200000),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
             ModelInfo {
                 id: "meta-llama/llama-3.1-70b-instruct".to_string(),
                 name: "Llama 3.1 70B Instruct".to_string(),
                 context_length: Some(131072),
-                input_cost_per_1k: Some(0.00059),
-                output_cost_per_1k: Some(0.00079),
-            },
-            ModelInfo {
-                id: "mistralai/mistral-large".to_string(),
-                name: "Mistral Large".to_string(),
-                context_length: Some(128000),
-                input_cost_per_1k: Some(0.004),
-                output_cost_per_1k: Some(0.012),
+                input_cost_per_1k: None,
+                output_cost_per_1k: None,
             },
         ])
     }

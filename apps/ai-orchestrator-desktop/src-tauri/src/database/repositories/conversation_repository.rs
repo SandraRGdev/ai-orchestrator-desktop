@@ -1,4 +1,4 @@
-use crate::models::conversation::{Conversation, CreateConversation};
+use crate::models::conversation::{Conversation, CreateConversation, UpdateConversationTitle};
 use crate::database::DatabaseError;
 use sqlx::{SqlitePool, Row};
 use uuid::Uuid;
@@ -74,5 +74,15 @@ impl ConversationRepository {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn update_title(&self, id: &str, req: UpdateConversationTitle) -> Result<Conversation, DatabaseError> {
+        sqlx::query("UPDATE conversations SET title = ?, updated_at = datetime('now') WHERE id = ?")
+            .bind(&req.title)
+            .bind(id)
+            .execute(&self.pool)
+            .await?;
+
+        self.get_by_id(id).await
     }
 }
